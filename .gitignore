@@ -1,0 +1,4 @@
+.ruby-version
+.byebug_history
+benchmark.rb
+*.gem
