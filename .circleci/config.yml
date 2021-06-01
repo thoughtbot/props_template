@@ -1,0 +1,48 @@
+version: 2.1
+
+orbs:
+  ruby: circleci/ruby@0.1.2
+
+executors:
+  ruby27:
+    docker:
+      - image: circleci/ruby:2.7-node-browsers
+  ruby26:
+    docker:
+      - image: circleci/ruby:2.6-node-browsers
+
+jobs:
+  props-template:
+    parameters:
+      ruby-version:
+        type: executor
+      gemfile:
+        type: string
+    executor: << parameters.ruby-version >>
+    steps:
+      - checkout
+      - run:
+          name: Which bundler?
+          command: bundle -v
+      - run:
+          name: Using Gemfile
+          command: mv -f ./<< parameters.gemfile >> ./Gemfile
+      - run:
+          name: Bundle install
+          command: bundle install
+      - run:
+          name: Rspec
+          command: bundle exec rspec
+
+workflows:
+  tests:
+    jobs:
+      - props-template:
+          matrix:
+            parameters:
+              gemfile:
+                - Gemfile.rails60
+                - Gemfile.rails61
+              ruby-version:
+                - ruby26
+                - ruby27

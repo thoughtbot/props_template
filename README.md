@@ -2,6 +2,8 @@
 
 PropsTemplate is a direct-to-Oj, JBuilder-like DSL for building JSON. It has support for Russian-Doll caching, layouts, and of course, its most unique feature: your templates are queryable.
 
+[![Build Status](https://circleci.com/gh/thoughtbot/props_template.svg?style=shield)](https://circleci.com/gh/thoughtbot/props_template)
+
 PropsTemplate is fast!
 
 Most libraries would build a hash before feeding it to your serializer of choice, typically Oj. PropsTemplate writes directly to Oj using `Oj::StringWriter` as its rendering your template and skips the need for an intermediate data structure.
