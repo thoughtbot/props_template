@@ -4,6 +4,9 @@ orbs:
   ruby: circleci/ruby@0.1.2
 
 executors:
+  ruby30:
+    docker:
+      - image: circleci/ruby:3.0-node-browsers
   ruby27:
     docker:
       - image: circleci/ruby:2.7-node-browsers
@@ -46,3 +49,4 @@ workflows:
               ruby-version:
                 - ruby26
                 - ruby27
+                - ruby30
