@@ -1,6 +1,7 @@
 require 'props_template/base_with_extensions'
 require 'props_template/searcher'
 require 'props_template/handler'
+require 'props_template/version'
 
 require 'active_support'
 
