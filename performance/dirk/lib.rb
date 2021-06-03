@@ -22,6 +22,10 @@ end
 class FakeContext
   attr_reader :controller
 
+  def cache_fragment_name(key, options)
+    key
+  end
+
   def initialize
     @controller = FakeController.new
   end

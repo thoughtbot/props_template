@@ -3,3 +3,5 @@
 benchmark.rb
 performance/*/*.png
 *.gem
+Gemfile.lock
+.tool-versions
