@@ -71,7 +71,24 @@ end
 gem 'props_template'
 ```
 
-and run `bundle`
+and run `bundle`.
+
+Add the [core ext](#array-core-extension) to an initializer.
+
+```ruby
+require 'props_template/core_ext'
+```
+
+
+And create a file in your `app/views` folder like so:
+
+```ruby
+# app/views/posts/index.json.props
+
+json.greetings "hello world"
+```
+
+You can also add a [layout](#layouts).
 
 ## API
 
