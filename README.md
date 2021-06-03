@@ -1,17 +1,29 @@
 # PropsTemplate
 
-PropsTemplate is a direct-to-Oj, JBuilder-like DSL for building JSON. It has support for Russian-Doll caching, layouts, and of course, its most unique feature: your templates are queryable.
+PropsTemplate is a direct-to-Oj, JBuilder-like DSL for building JSON. It has
+support for Russian-Doll caching, layouts, and can be queried by giving the
+root a key path.
 
-[![Build Status](https://circleci.com/gh/thoughtbot/props_template.svg?style=shield)](https://circleci.com/gh/thoughtbot/props_template)
+[![Build
+Status](https://circleci.com/gh/thoughtbot/props_template.svg?style=shield)](https://circleci.com/gh/thoughtbot/props_template)
 
-PropsTemplate is fast!
+It's fast.
 
-Most libraries would build a hash before feeding it to your serializer of choice, typically Oj. PropsTemplate writes directly to Oj using `Oj::StringWriter` as its rendering your template and skips the need for an intermediate data structure.
+PropsTemplate bypasses the steps of hash building and serializing
+that other libraries perform by using Oj's `StringWriter` in `rails` mode.
 
-PropsTemplate also improves caching. While other libraries spend time unmarshaling, merging, and then serializing to JSON; PropsTemplate simply takes the cached string and [push_json](http://www.ohler.com/oj/doc/Oj/StringWriter.html#push_json-instance_method).
+![benchmarks](docs/benchmarks.png)
 
+Caching is fast too.
 
-Example:
+While other libraries spend time unmarshaling,
+merging hashes, and serializing to JSON; PropsTemplate simply takes
+the cached string and uses Oj's [push_json](http://www.ohler.com/oj/doc/Oj/StringWriter.html#push_json-instance_method).
+
+## Example:
+
+PropsTemplate is very similar to JBuilder, and selectively retains some
+conveniences and magic.
 
 ```ruby
 json.flash flash.to_h
@@ -49,13 +61,11 @@ json.posts do
   json.total @posts.count
 end
 
-
 json.footer partial: 'shared/footer' do
 end
 ```
 
 ## Installation
-If you plan to use PropsTemplate alone just add it to your Gemfile.
 
 ```
 gem 'props_template'
@@ -65,18 +75,19 @@ and run `bundle`
 
 ## API
 
-### json.set! or json.<your key here>
-Defines the attribute or stucture. All keys are automatically camelized lower.
+### json.set! or json.\<your key here\>
+
+Defines the attribute or structure. All keys are automatically camelized lower.
 
 ```ruby
-json.set! :author_details, {..options...} do
+json.set! :author_details, {...options} do
   json.set! :first_name, 'David'
 end
 
 or
 
-json.author_details, {..options...} do
-  json.first_name, 'David'
+json.author_details, {...options} do
+  json.first_name 'David'
 end
 
 
@@ -91,6 +102,7 @@ The inline form defines key and value
 | value | A value |
 
 ```ruby
+
 json.set! :first_name, 'David'
 
 or
@@ -110,39 +122,36 @@ The block form defines key and structure
 
 ```ruby
 json.set! :details do
- ...
+  ...
 end
 
 or
 
 json.details do
- ...
+  ...
 end
 ```
 
 The difference between the block form and inline form is
-1. The block form is an internal node. Partials, Deferement and other [options](#options) are only available on the block form.
-2. The inline form is considered a leaf node, and you can only [search](#traversing) for internal nodes.
+  1. The block form is an internal node. Functionality such as Partials,
+  Deferment and other [options](#options) are only available on the
+  block form.
+  2. The inline form is considered a leaf node, and you can only [search](#traversing)
+  for internal nodes.
 
 ### json.array!
 Generates an array of json objects.
 
 ```ruby
-collection = [
-  {name: 'john'},
-  {name: 'jim'}
-]
+collection = [ {name: 'john'}, {name: 'jim'} ]
 
 json.details do
-  json.array! collection, {....options...} do |person|
+  json.array! collection, {...options} do |person|
     json.first_name person[:name]
   end
 end
 
-# => {"details": [
-  {"firstName": 'john'},
-  {"firstName": 'jim'}
-]}
+# => {"details": [{"firstName": 'john'}, {"firstName": 'jim'} ]}
 ```
 
 | Parameter | Notes |
@@ -150,7 +159,8 @@ end
 | collection | A collection that responds to `member_at` and `member_by` |
 | options | Additional [options](#options)|
 
-To support [traversing nodes](react-redux.md#traversing-nodes), any list passed to `array!` MUST implement `member_at(index)` and `member_by(attr, value)`.
+To support [traversing nodes](#traversing), any list passed
+to `array!` MUST implement `member_at(index)` and `member_by(attr, value)`.
 
 For example, if you were using a delegate:
 
@@ -171,7 +181,10 @@ end
 Then in your template:
 
 ```ruby
-data = ObjectCollection.new([{id: 1, name: 'foo'}, {id: 2, name: 'bar'}])
+data = ObjectCollection.new([
+  {id: 1, name: 'foo'},
+  {id: 2, name: 'bar'}
+])
 
 json.array! data do
   ...
@@ -202,11 +215,15 @@ end
 
 #### **Array core extension**
 
-For convenience, PropsTemplate includes a core\_ext that adds these methods to `Array`. For example:
+For convenience, PropsTemplate includes a core\_ext that adds these methods to
+`Array`. For example:
 
 ```ruby
 require 'props_template/core_ext'
-data = [{id: 1, name: 'foo'}, {id: 2, name: 'bar'}]
+data = [
+  {id: 1, name: 'foo'},
+  {id: 2, name: 'bar'}
+]
 
 json.posts
   json.array! data do
@@ -215,28 +232,39 @@ json.posts
 end
 ```
 
-PropsTemplate does not know what the elements are in your collection. The example above will be fine for [traversing](props-template.md#traversing_nodes) by index `\posts?bzq=posts.0`, but will raise a `NotImplementedError` if you query by attribute `/posts?bzq=posts.id=1`. You may still need a delegate that implements `member_by`.
+PropsTemplate does not know what the elements are in your collection. The
+example above will be fine for [traversing](#traversing)
+by index, but will raise a `NotImplementedError` if you query by attribute. You
+may still need to implement `member_by`.
 
 ### json.deferred!
 Returns all deferred nodes used by the [deferment](#deferment) option.
 
+**Note** This is a [BreezyJS][1] specific functionality and is used in
+`application.json.props` when first running `rails breezy:install:web`
+
+
 ```ruby
 json.deferred json.deferred!
+
+# => [{url: '/some_url?bzq=outer.inner', path: 'outer.inner', type: 'auto'}]
 ```
 
-This method is normally used in `application.json.props` when first generated by `rails breezy:install:web`
+This method provides metadata about deferred nodes to the frontend ([BreezyJS][1])
+to fetch missing data in a second round trip.
 
 ### json.fragments!
-Returns all fragment nodes used by the [partial fragments](#partial-fragments) option.
+Returns all fragment nodes used by the [partial fragments](#partial-fragments)
+option.
 
-```ruby
-json.fragments json.fragments!
-```
+```ruby json.fragments json.fragments!  ```
 
-This method is normally used in `application.json.props` when first generated by `rails breezy:install:web`
+**Note** This is a [BreezyJS][1] specific functionality and is used in
+`application.json.props` when first running `rails breezy:install:web`
 
 ## Options
-Functionality such as Partials, Deferements, and Caching can only be set on a block. It is normal to see empty blocks.
+Options Functionality such as Partials, Deferements, and Caching can only be
+set on a block. It is normal to see empty blocks.
 
 ```ruby
 json.post(partial: 'blog_post') do
@@ -245,7 +273,9 @@ end
 
 ### Partials
 
-Partials are supported. The following will render the file `views/posts/_blog_posts.json.props`, and set a local variable `foo` assigned with @post, which you can use inside the partial.
+Partials are supported. The following will render the file
+`views/posts/_blog_posts.json.props`, and set a local variable `foo` assigned
+with @post, which you can use inside the partial.
 
 ```ruby
 json.one_post partial: ["posts/blog_post", locals: {post: @post}] do
@@ -255,7 +285,8 @@ end
 Usage with arrays:
 
 ```ruby
-# as an option on an array. The `as:` option is supported when using `array!`
+# The `as:` option is supported when using `array!`
+
 json.posts do
   json.array! @posts, partial: ["posts/blog_post", locals: {foo: 'bar'}, as: 'post'] do
   end
@@ -263,14 +294,14 @@ end
 ```
 
 ### Partial Fragments
+**Note** This is a [BreezyJS][1] specific functionality.
 
-A fragment uses a digest to identify a rendered partial across your page state in Redux. When BreezyJS recieves a payload with a fragment, it will update every fragment with the same digest in your Redux store.
-
-You would need use partials and add the option `fragment: true`.
+A fragment identifies a partial output across multiple pages. It can be used to
+update cross cutting concerns like a header bar.
 
 ```ruby
 # index.json.props
-json.header partial: ["profile", fragment: true] do
+json.header partial: ["profile", fragment: "header"] do
 end
 
 # _profile.json.props
@@ -284,21 +315,16 @@ end
 When using fragments with Arrays, the argument **MUST** be a lamda:
 
 ```ruby
-require 'props_template/core_ext' #See (lists)[#Lists]
+require 'props_template/core_ext'
 
-json.array! ['foo', 'bar'], partial: ["footer", fragment: ->(x){ x == 'foo'}]
-```
-
-PropsTemplate creates a name for the partial using a digest of your locals, partial name, and globalId (to_json as fallback if there is no globalId) on objects that you pass. You may override this behavior and use a custom identifier:
-
-```ruby
-# index.js.breezy
-json.header partial: ["profile", fragment: 'me_header'] do
+json.array! ['foo', 'bar'], partial: ["footer", fragment: ->(x){ x == 'foo'}] do
 end
 ```
 
 ### Caching
-Caching is supported on any node.
+Caching is supported on internal nodes only. This limitation is what makes it
+possible to for props_template to forgo marshalling/unmarshalling and simply
+use [push_json](http://www.ohler.com/oj/doc/Oj/StringWriter.html#push_json-instance_method).
 
 Usage:
 
@@ -324,44 +350,60 @@ end
 When used with arrays, PropsTemplate will use `Rails.cache.read_multi`.
 
 ```ruby
-require 'props_template/core_ext' #See (lists)[#Lists]
+require 'props_template/core_ext'
 
-opts = {
-  cache: ->(i){ ['a', i] }
-}
+opts = { cache: ->(i){ ['a', i] } }
+
 json.array! [4,5], opts do |x|
   json.top "hello" + x.to_s
 end
 
 #or on arrays with partials
 
-opts = {
-  cache: (->(d){ ['a', d.id] }),
-  partial: ["blog_post", as: :blog_post]
-}
-json.array! @options, opts
+opts = { cache: (->(d){ ['a', d.id] }), partial: ["blog_post", as: :blog_post] }
+
+json.array! @options, opts do
+end
 ```
 
 ### Deferment
 
-You can defer rendering of expensive nodes in your content tree using the `defer: :auto` option. Behind the scenes PropsTemplates will no-op the block entirely, replace the value with `{}` as a placeholder.
-When the client recieves the payload, BreezyJS will use the meta data to issue a `remote` dispatch to fetch the missing node and immutibly graft it at the appropriate keypath in your Redux store.
+You can defer rendering of expensive nodes in your content tree using the
+`defer: :manual` option. Behind the scenes PropsTemplates will no-op the block
+entirely and replace the value with a placeholder. A common use case would be
+tabbed content that does not load until you click the tab.
 
-You can access what was deferred with `json.deferred!`. If you use the generators, this will be set up in `application.json.props`.
+When your client receives the payload, you may issue a second request to the
+same endpoint to fetch any missing nodes. See [traversing nodes](#traversing)
+
+There is also an `defer: :auto` option that you can use with [BreezyJS][1]. [BreezyJS][1]
+will use the metadata from `json.deferred!` to issue a `remote` dispatch to fetch
+the missing node and immutably graft it at the appropriate keypath in your Redux
+store.
 
 Usage:
 
 ```ruby
-json.dashboard(defer: :auto) do
+json.dashboard(defer: :manual) do
+  sleep 10
+  json.some_fancy_metric 42
+end
+
+
+# or you can explicitly pass a placeholder
+
+json.dashboard(defer: [:manual, placeholder: {}]) do
   sleep 10
   json.some_fancy_metric 42
 end
 ```
 
-A manual option is also available:
+A auto option is available:
+
+**Note** This is a [BreezyJS][1] specific functionality.
 
 ```ruby
-json.dashboard(defer: :manual) do
+json.dashboard(defer: :auto) do
   sleep 10
   json.some_fancy_metric 42
 end
@@ -373,39 +415,51 @@ Finally in your `application.json.props`:
 json.defers json.deferred!
 ```
 
-
-If `:manual` is used, PropsTemplate will no-op the block and will not populate `json.deferred!`. Its up to you to [query](props-template.md#traversing_nodes) to fetch the node seperately. A common usecase would be tab content that does not load until you click the tab.
-
 #### Working with arrays
-The default behavior for deferements is to use the index of the collection to identify an element. PropsTemplate will generate `?_bzq=a.b.c.0.title` in its metadata.
+The default behavior for deferements is to use the index of the collection to
+identify an element.
+
+**Note** If you are using this library with [BreezyJS][1], the `:auto` options will
+generate `?_bzq=a.b.c.0.title` for `json.deferred!`.
 
 If you wish to use an attribute to identify the element. You must:
-1. Implement `:key` to specify which attribute you want to use to uniquely identify the element in the collection. PropsTemplate will generate `?_bzq=a.b.c.some_id=some_value.title`
-2. Implement `member_at`, and `member_key` on the collection to allow for BreezyJS to traverse the tree based on key value attributes.
+
+1. Use the `:key` option on `json.array!`. This key refers to an attribute on
+your collection item, and is used for `defer: :auto` to generate a keypath for
+[BreezyJS][1]. If you are NOT using BreezyJS, you do not need to do this.
+
+2. Implement `member_at`, on the [collection](#jsonarray). This will be called
+by PropsTemplate to when [searching nodes](#traversing)
 
 For example:
 
 ```ruby
-require 'props_template/core_ext' #See (lists)[#Lists]
-
-data = [{id: 1, name: 'foo'}, {id: 2, name: 'bar'}]
+require 'props_template/core_ext'
+data = [
+  {id: 1, name: 'foo'},
+  {id: 2, name: 'bar'}
+]
 
 json.posts
   json.array! data, key: :some_id do |item|
+    # By using :key, props_template will append `json.some_id item.some_id`
+    # automatically
+
     json.contact(defer: :auto) do
       json.address '123 example drive'
     end
-
-   # json.some_id item.some_id will be appended automatically to the end of the block
   end
 end
 ```
 
-When BreezyJS receives the response, it will automatically kick off `remote(?bzq=posts.some_id=1.contact)` and `remote(?bzq=posts.some_id=2.contact)`.
+If you are using [BreezyJS][1], BreezyJS will, it will automatically kick off
+`remote(?bzq=posts.some_id=1.contact)` and `remote(?bzq=posts.some_id=2.contact)`.
 
-# Traversing
+## Traversing
 
-PropsTemplate has the ability to walk the tree you build, skipping execution of untargeted nodes. This feature is useful for partial updating your frontend state. See [traversing nodes](react-redux.md#traversing-nodes)
+PropsTemplate has the ability to walk the tree you build, skipping execution of
+untargeted nodes. This feature is useful for selectively updating your frontend
+state.
 
 ```ruby
 traversal_path = ['data', 'details', 'personal']
@@ -413,7 +467,7 @@ traversal_path = ['data', 'details', 'personal']
 json.data(search: traversal_path) do
   json.details do
     json.employment do
-      ...more stuff...
+      ...more stuff
     end
 
     json.personal do
@@ -424,25 +478,28 @@ json.data(search: traversal_path) do
 end
 
 json.footer do
- ...
+  ...
 end
 ```
 
-PropsTemplate will will walk breath first, finds the matching key, executes the associated block, then repeats until it the node is found. The above will output the below:
+PropsTemplate will walk depth first, walking only when it finds a matching key,
+then executes the associated block, and repeats until it the node is found.
+The above will output:
 
 ```json
 {
-  data: {
-    name: 'james',
-    zipCode: 91210
+  "data": {
+    "name": 'james',
+    "zipCode": 91210
   },
-  footer: {
-    ....
+  "footer": {
+    ...
   }
 }
 ```
 
-Breezy's searching only works with blocks, and will NOT work with Scalars ("leaf" values). For example:
+Searching only works with blocks, and will NOT work with Scalars
+("leaf" values). For example:
 
 ```ruby
 traversal_path = ['data', 'details', 'personal', 'name'] <- not found
@@ -454,12 +511,11 @@ json.data(search: traversal_path) do
     end
   end
 end
-
 ```
 
 ## Nodes that do not exist
 
-Nodes that are not found will not define the key where search was enabled on.
+Nodes that are not found will remove the branch where search was enabled on.
 
 ```ruby
 traversal_path = ['data', 'details', 'does_not_exist']
@@ -473,17 +529,54 @@ json.data(search: traversal_path) do
 end
 
 json.footer do
- ...
+  ...
 end
-
 ```
 
 The above will render:
 
-```
+```json
 {
-  footer: {
+  "footer": {
     ...
   }
 }
 ```
+
+## Layouts
+A single layout is supported. To use, create an `application.json.props` in
+`app/views/layouts`. Here's an example:
+
+```ruby
+json.data do
+  # template runs here.
+  yield json
+end
+
+json.header do
+  json.greeting "Hello"
+end
+
+json.footer do
+  json.greeting "Hello"
+end
+
+json.flash flash.to_h
+```
+
+**NOTE** PropsTemplate inverts the usual Rails rendering flow. PropsTemplate
+will render Layout first, then the template when `yield json` is used.
+
+## Contributing
+
+See the [CONTRIBUTING] document. Thank you, [contributors]!
+
+  [CONTRIBUTING]: CONTRIBUTING.md
+  [contributors]: https://github.com/thoughtbot/props_template/graphs/contributors
+
+## Special Thanks
+
+Thanks to [turbostreamer](https://github.com/malomalo/turbostreamer) for the
+inspiration.
+
+[1]: https://github.com/thoughtbot/breezy
