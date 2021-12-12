@@ -264,7 +264,7 @@ Returns all deferred nodes used by the [deferment](#deferment) option.
 ```ruby
 json.deferred json.deferred!
 
-# => [{url: '/some_url?bzq=outer.inner', path: 'outer.inner', type: 'auto'}]
+# => [{url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'}]
 ```
 
 This method provides metadata about deferred nodes to the frontend ([BreezyJS][1])
@@ -437,7 +437,7 @@ The default behavior for deferements is to use the index of the collection to
 identify an element.
 
 **Note** If you are using this library with [BreezyJS][1], the `:auto` options will
-generate `?_bzq=a.b.c.0.title` for `json.deferred!`.
+generate `?props_at=a.b.c.0.title` for `json.deferred!`.
 
 If you wish to use an attribute to identify the element. You must:
 
@@ -470,7 +470,7 @@ end
 ```
 
 If you are using [BreezyJS][1], BreezyJS will, it will automatically kick off
-`remote(?bzq=posts.some_id=1.contact)` and `remote(?bzq=posts.some_id=2.contact)`.
+`remote(?props_at=posts.some_id=1.contact)` and `remote(?props_at=posts.some_id=2.contact)`.
 
 ## Traversing
 

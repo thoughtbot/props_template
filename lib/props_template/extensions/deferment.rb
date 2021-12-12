@@ -47,8 +47,8 @@ module Props
       path = @base.traveled_path.join('.')
       uri = ::URI.parse(request_path)
       qry = ::URI.decode_www_form(uri.query || '')
-        .reject{|x| x[0] == 'bzq' }
-        .push(["bzq", path])
+        .reject{|x| x[0] == 'props_at' }
+        .push(["props_at", path])
 
       uri.query = ::URI.encode_www_form(qry)
 

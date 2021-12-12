@@ -23,7 +23,7 @@ RSpec.describe 'Props::Template fragments' do
         inner: {}
       },
       defers: [
-        {url: '/some_url?bzq=outer.inner', path: 'outer.inner', type: 'auto'}
+        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'}
       ],
       fragments: [
         {type: :simple, partial: 'simple', path: 'outer.inner'}
@@ -31,8 +31,8 @@ RSpec.describe 'Props::Template fragments' do
     })
   end
 
-  it 'overrides existing bzq paramenters' do
-    @controller.request.path = '/some_url?bzq=outer'
+  it 'overrides existing props_at paramenters' do
+    @controller.request.path = '/some_url?props_at=outer'
 
     json = render(<<~PROPS)
       json.outer do
@@ -49,7 +49,7 @@ RSpec.describe 'Props::Template fragments' do
         inner: {}
       },
       defers: [
-        {url: '/some_url?bzq=outer.inner', path: 'outer.inner', type: 'auto'}
+        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'}
       ],
       fragments: [
         {type: :simple, partial: 'simple', path: 'outer.inner'}

@@ -25,7 +25,7 @@ RSpec.describe 'Props::Template' do
         inner: {}
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner', path: 'outer.inner', type: 'auto'}
+        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'}
       ]
     })
   end
@@ -48,7 +48,7 @@ RSpec.describe 'Props::Template' do
         inner: []
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner', path: 'outer.inner', type: 'auto'}
+        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'}
       ]
     })
   end
@@ -71,7 +71,7 @@ RSpec.describe 'Props::Template' do
         inner: nil
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner', path: 'outer.inner', type: 'auto', successAction: 'SUCCESS', failAction: 'FAIL'}
+        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto', successAction: 'SUCCESS', failAction: 'FAIL'}
       ]
     })
   end
@@ -94,7 +94,7 @@ RSpec.describe 'Props::Template' do
         inner: {}
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner', path: 'outer.inner', type: 'manual'}
+        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'manual'}
       ]
     })
   end
@@ -117,8 +117,8 @@ RSpec.describe 'Props::Template' do
         inner2: {}
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner', path: 'outer.inner', type: 'auto'},
-        {url: '/some_url?bzq=outer.inner2', path: 'outer.inner2', type: 'auto'}
+        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner2', path: 'outer.inner2', type: 'auto'}
       ]
     })
   end
@@ -141,7 +141,7 @@ RSpec.describe 'Props::Template' do
         inner: {}
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner', path: 'outer.inner', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'},
       ]
     })
   end
@@ -169,8 +169,8 @@ RSpec.describe 'Props::Template' do
         ]
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner.0', path: 'outer.inner.0', type: 'auto'},
-        {url: '/some_url?bzq=outer.inner.1', path: 'outer.inner.1', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner.0', path: 'outer.inner.0', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner.1', path: 'outer.inner.1', type: 'auto'},
       ]
     })
   end
@@ -205,8 +205,8 @@ RSpec.describe 'Props::Template' do
         ]
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner.id%3D1', path: 'outer.inner.id=1', type: 'auto'},
-        {url: '/some_url?bzq=outer.inner.id%3D2', path: 'outer.inner.id=2', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner.id%3D1', path: 'outer.inner.id=1', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner.id%3D2', path: 'outer.inner.id=2', type: 'auto'},
       ]
     })
   end
@@ -242,8 +242,8 @@ RSpec.describe 'Props::Template' do
         ]
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner.id%3D1', path: 'outer.inner.id=1', type: 'auto'},
-        {url: '/some_url?bzq=outer.inner.id%3D2', path: 'outer.inner.id=2', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner.id%3D1', path: 'outer.inner.id=1', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner.id%3D2', path: 'outer.inner.id=2', type: 'auto'},
       ]
     })
   end
@@ -271,8 +271,8 @@ RSpec.describe 'Props::Template' do
         ]
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner.0', path: 'outer.inner.0', type: 'manual'},
-        {url: '/some_url?bzq=outer.inner.1', path: 'outer.inner.1', type: 'manual'},
+        {url: '/some_url?props_at=outer.inner.0', path: 'outer.inner.0', type: 'manual'},
+        {url: '/some_url?props_at=outer.inner.1', path: 'outer.inner.1', type: 'manual'},
       ]
     })
   end
@@ -301,7 +301,7 @@ RSpec.describe 'Props::Template' do
         ]
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner.0', path: 'outer.inner.0', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner.0', path: 'outer.inner.0', type: 'auto'},
       ]
     })
   end
@@ -334,8 +334,8 @@ RSpec.describe 'Props::Template' do
         sibling: {}
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner.0', path: 'outer.inner.0', type: 'auto'},
-        {url: '/some_url?bzq=outer.sibling', path: 'outer.sibling', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner.0', path: 'outer.inner.0', type: 'auto'},
+        {url: '/some_url?props_at=outer.sibling', path: 'outer.sibling', type: 'auto'},
       ]
     })
   end
@@ -358,7 +358,7 @@ RSpec.describe 'Props::Template' do
         inner: {}
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner', path: 'outer.inner', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'},
       ]
     })
   end
@@ -426,7 +426,7 @@ RSpec.describe 'Props::Template' do
         greeting: {}
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner.greeting', path: 'outer.inner.greeting', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner.greeting', path: 'outer.inner.greeting', type: 'auto'},
       ]
     })
   end
@@ -457,7 +457,7 @@ RSpec.describe 'Props::Template' do
         }
       },
       deferred: [
-        {url: '/some_url?bzq=hit1.hit2.outer.inner.greeting', path: 'hit1.hit2.outer.inner.greeting', type: 'auto'},
+        {url: '/some_url?props_at=hit1.hit2.outer.inner.greeting', path: 'hit1.hit2.outer.inner.greeting', type: 'auto'},
       ]
     })
   end
@@ -485,7 +485,7 @@ RSpec.describe 'Props::Template' do
         }
       },
       deferred: [
-        {url: '/some_url?bzq=outer.inner.greeting', path: 'outer.inner.greeting', type: 'auto'},
+        {url: '/some_url?props_at=outer.inner.greeting', path: 'outer.inner.greeting', type: 'auto'},
       ]
     })
   end
