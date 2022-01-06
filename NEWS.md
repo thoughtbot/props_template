@@ -1,5 +1,8 @@
 # News
 
+## 0.21.1 (Jan 6, 2022)
+  * Add support for Rails 7
+
 ## 0.21.0 (Jan 3, 2022)
   * rename bzq to props_at
 
