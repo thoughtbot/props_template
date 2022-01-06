@@ -32,7 +32,7 @@ RSpec.describe 'Props::Template caching' do
   end
 
   it 'caches an object with expiry' do
-    travel_to "2018-05-12 11:29:00 -0400"
+    freeze_time
 
     json = render(<<~PROPS)
       opts = {
@@ -104,7 +104,7 @@ RSpec.describe 'Props::Template caching' do
   end
 
   it 'caches object in an array with an expiry' do
-    travel_to "2018-05-12 11:29:00 -0400"
+    freeze_time
 
     json = render(<<~PROPS)
       json.authors do

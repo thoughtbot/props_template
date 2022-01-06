@@ -46,6 +46,7 @@ workflows:
               gemfile:
                 - Gemfile.rails60
                 - Gemfile.rails61
+                - Gemfile.rails70
               ruby-version:
                 - ruby26
                 - ruby27
