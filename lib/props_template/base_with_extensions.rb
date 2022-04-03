@@ -1,11 +1,3 @@
-require 'props_template/base'
-require 'props_template/extensions/partial_renderer'
-require 'props_template/extensions/cache'
-require 'props_template/extensions/deferment'
-require 'props_template/extension_manager'
-require 'active_support/core_ext/string/output_safety'
-require 'active_support/core_ext/array'
-
 module Props
   class BaseWithExtensions < Base
     attr_reader :builder, :context, :fragments, :traveled_path, :deferred, :stream

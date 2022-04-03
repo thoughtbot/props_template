@@ -17,13 +17,11 @@ module Props
 
   class Partialer
     INVALID_PARTIAL_MESSAGE = "The partial name must be a string, but received (%s)."
-    OPTION_AS_ERROR_MESSAGE  = "The value (%s) of the option `as` is not a valid Ruby identifier; " \
+    OPTION_AS_ERROR_MESSAGE = "The value (%s) of the option `as` is not a valid Ruby identifier; " \
                                "make sure it starts with lowercase letter, " \
                                "and is followed by any combination of letters, numbers and underscores."
     IDENTIFIER_ERROR_MESSAGE = "The partial name (%s) is not a valid Ruby identifier; " \
                                "make sure your partial name starts with underscore."
-
-    INVALID_PARTIAL_MESSAGE = "The partial name must be a string, but received (%s)."
 
 
     def initialize(base, context, builder)

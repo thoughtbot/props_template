@@ -1,5 +1,3 @@
-require 'props_template/extensions/partial_renderer'
-
 module Props
   class Searcher
     attr_reader :builder, :context, :fragments, :traveled_path

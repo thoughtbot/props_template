@@ -1,8 +1,3 @@
-require 'props_template/extensions/partial_renderer'
-require 'props_template/extensions/cache'
-require 'props_template/extensions/deferment'
-require 'props_template/extensions/fragment'
-
 module Props
   class ExtensionManager
     attr_reader :base, :builder, :context
