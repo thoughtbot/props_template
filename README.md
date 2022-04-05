@@ -257,8 +257,8 @@ may still need to implement `member_by`.
 ### json.deferred!
 Returns all deferred nodes used by the [deferment](#deferment) option.
 
-**Note** This is a [BreezyJS][1] specific functionality and is used in
-`application.json.props` when first running `rails breezy:install:web`
+**Note** This is a [SuperglueJS][1] specific functionality and is used in
+`application.json.props` when first running `rails superglue:install:web`
 
 
 ```ruby
@@ -267,7 +267,7 @@ json.deferred json.deferred!
 # => [{url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'}]
 ```
 
-This method provides metadata about deferred nodes to the frontend ([BreezyJS][1])
+This method provides metadata about deferred nodes to the frontend ([SuperglueJS][1])
 to fetch missing data in a second round trip.
 
 ### json.fragments!
@@ -276,8 +276,8 @@ option.
 
 ```ruby json.fragments json.fragments!  ```
 
-**Note** This is a [BreezyJS][1] specific functionality and is used in
-`application.json.props` when first running `rails breezy:install:web`
+**Note** This is a [SuperglueJS][1] specific functionality and is used in
+`application.json.props` when first running `rails superglue:install:web`
 
 ## Options
 Options Functionality such as Partials, Deferements, and Caching can only be
@@ -311,7 +311,7 @@ end
 ```
 
 ### Partial Fragments
-**Note** This is a [BreezyJS][1] specific functionality.
+**Note** This is a [SuperglueJS][1] specific functionality.
 
 A fragment identifies a partial output across multiple pages. It can be used to
 update cross cutting concerns like a header bar.
@@ -393,7 +393,7 @@ tabbed content that does not load until you click the tab.
 When your client receives the payload, you may issue a second request to the
 same endpoint to fetch any missing nodes. See [traversing nodes](#traversing)
 
-There is also an `defer: :auto` option that you can use with [BreezyJS][1]. [BreezyJS][1]
+There is also an `defer: :auto` option that you can use with [SuperglueJS][1]. [SuperglueJS][1]
 will use the metadata from `json.deferred!` to issue a `remote` dispatch to fetch
 the missing node and immutably graft it at the appropriate keypath in your Redux
 store.
@@ -417,7 +417,7 @@ end
 
 A auto option is available:
 
-**Note** This is a [BreezyJS][1] specific functionality.
+**Note** This is a [SuperglueJS][1] specific functionality.
 
 ```ruby
 json.dashboard(defer: :auto) do
@@ -436,14 +436,14 @@ json.defers json.deferred!
 The default behavior for deferements is to use the index of the collection to
 identify an element.
 
-**Note** If you are using this library with [BreezyJS][1], the `:auto` options will
+**Note** If you are using this library with [SuperglueJS][1], the `:auto` options will
 generate `?props_at=a.b.c.0.title` for `json.deferred!`.
 
 If you wish to use an attribute to identify the element. You must:
 
 1. Use the `:key` option on `json.array!`. This key refers to an attribute on
 your collection item, and is used for `defer: :auto` to generate a keypath for
-[BreezyJS][1]. If you are NOT using BreezyJS, you do not need to do this.
+[SuperglueJS][1]. If you are NOT using SuperglueJS, you do not need to do this.
 
 2. Implement `member_at`, on the [collection](#jsonarray). This will be called
 by PropsTemplate to when [searching nodes](#traversing)
@@ -469,7 +469,7 @@ json.posts
 end
 ```
 
-If you are using [BreezyJS][1], BreezyJS will, it will automatically kick off
+If you are using [SuperglueJS][1], SuperglueJS will, it will automatically kick off
 `remote(?props_at=posts.some_id=1.contact)` and `remote(?props_at=posts.some_id=2.contact)`.
 
 ## Traversing
@@ -596,4 +596,4 @@ See the [CONTRIBUTING] document. Thank you, [contributors]!
 Thanks to [turbostreamer](https://github.com/malomalo/turbostreamer) for the
 inspiration.
 
-[1]: https://github.com/thoughtbot/breezy
+[1]: https://github.com/thoughtbot/superglue
