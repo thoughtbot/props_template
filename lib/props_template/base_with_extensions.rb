@@ -20,6 +20,10 @@ module Props
       @em.fragments
     end
 
+    def traveled_path!
+      @traveled_path.join(".")
+    end
+
     def set_block_content!(options = {})
       return super if !@em.has_extensions(options)
 

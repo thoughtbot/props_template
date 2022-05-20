@@ -25,6 +25,7 @@ module Props
       :deferred!,
       :fragments!,
       :set_block_content!,
+      :traveled_path!,
       to: :builder!
 
     def initialize(context = nil, options = {})
