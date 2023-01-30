@@ -12,6 +12,24 @@ RSpec.describe 'Props::Base' do
       json = Props::Base.new
       expect(json.result!.strip).to eql('{}')
     end
+
+    it 'resets OJ' do
+      json = Props::Base.new
+      json.set! :foo, 'bar'
+      attrs = json.result!.strip
+
+      expect(attrs).to eql_json({
+        foo: 'bar'
+      })
+
+      expect(json.result!.strip).to eql_json({})
+
+      json.set! :foo, 'bar'
+      attrs = json.result!.strip
+      expect(attrs).to eql_json({
+        foo: 'bar'
+      })
+    end
   end
 
   context 'set!' do

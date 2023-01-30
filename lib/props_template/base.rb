@@ -114,6 +114,8 @@ module Props
       end
 
       json = @stream.raw_json
+      @stream.reset
+
       @scope = nil
       @key_cache = {}
       json
