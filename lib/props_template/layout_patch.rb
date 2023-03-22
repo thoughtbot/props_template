@@ -7,7 +7,7 @@ module Props
       @details = extract_details(options)
       template = determine_template(options)
 
-      if template.handler == Props::Handler && options[:layout]
+      if template.respond_to?(:handler) && template.handler == Props::Handler && options[:layout]
         prepend_formats(template.format)
         render_props_template(context, template, options[:layout], options[:locals])
       else
