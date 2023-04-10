@@ -22,6 +22,7 @@ module Props
     end
 
     def handle_set_block(key, options)
+      key = format_key(key)
       @stream.push_key(key)
       set_block_content!(options) do
         yield
@@ -33,8 +34,6 @@ module Props
     end
 
     def set!(key, value = nil)
-      key = format_key(key)
-
       if @scope == :array
         raise InvalidScopeForObjError.new('Attempted to set! on an array! scope')
       end
@@ -49,6 +48,7 @@ module Props
           yield
         end
       else
+        key = format_key(key)
         @stream.push_value(value, key)
       end
 

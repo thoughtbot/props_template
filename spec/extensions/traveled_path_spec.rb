@@ -6,11 +6,11 @@ RSpec.describe 'Props::Template' do
     @controller.request.path = '/some_url'
   end
 
-  it 'finds the correct node and merges it to the top' do
+  it 'returns the path of the node its called from' do
     json = render(<<~PROPS)
       json.data do
         json.comment do
-          json.details do
+          json.full_details do
             json.foo json.traveled_path!
           end
         end
@@ -20,8 +20,8 @@ RSpec.describe 'Props::Template' do
     expect(json).to eql_json({
       data: {
         comment: {
-          details: {
-            foo: 'data.comment.details'
+          fullDetails: {
+            foo: 'data.comment.full_details'
           }
         }
       },
