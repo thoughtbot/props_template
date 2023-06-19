@@ -29,7 +29,7 @@ conveniences and magic.
 json.flash flash.to_h
 
 json.menu do
-  # all keys will be formatted as camelCase
+  # By default, all keys will be formatted as camelCase. See #change_key_format
 
   json.current_user do
     json.email current_user.email
@@ -94,7 +94,8 @@ You can also add a [layout](#layouts).
 
 ### json.set! or json.\<your key here\>
 
-Defines the attribute or structure. All keys are automatically camelized lower.
+Defines the attribute or structure. All keys are automatically camelized lower
+by default. See [Change Key Format](#change_key_format) to change this behavior.
 
 ```ruby
 json.set! :author_details, {...options} do
@@ -583,6 +584,18 @@ json.flash flash.to_h
 
 **NOTE** PropsTemplate inverts the usual Rails rendering flow. PropsTemplate
 will render Layout first, then the template when `yield json` is used.
+
+## Change key format
+By default, all keys will be formatted with `camelized(:lower)`. If you want to
+change this behavior, override it in an initializer:
+
+```ruby
+Props::BaseWithExtensions.class_eval do
+  def key_format(key)
+    key.to_s
+  end
+end
+```
 
 ## Contributing
 
