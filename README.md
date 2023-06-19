@@ -597,6 +597,11 @@ Props::BaseWithExtensions.class_eval do
 end
 ```
 
+## Escape mode
+
+PropsTemplate runs OJ with `mode: :rails`, which escapes HTML and XML characters
+such as `&` and `<`.
+
 ## Contributing
 
 See the [CONTRIBUTING] document. Thank you, [contributors]!

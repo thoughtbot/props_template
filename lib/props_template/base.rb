@@ -1,6 +1,5 @@
 require 'oj'
 require 'active_support'
-#todo: active_support/core_ext/string/output_safety.rb
 
 module Props
   class InvalidScopeForArrayError < StandardError; end
