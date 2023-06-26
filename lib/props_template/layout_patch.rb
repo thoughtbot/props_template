@@ -1,28 +1,24 @@
 module Props
   module LayoutPatch
-    def render(context, options)
-      options[:locals] ||= {}
-      options[:locals][:json] = nil
-
-      @details = extract_details(options)
-      template = determine_template(options)
-
-      if template.respond_to?(:handler) && template.handler == Props::Handler && options[:layout]
+    def render_template(view, template, layout_name, locals)
+      if template.respond_to?(:handler) && template.handler == Props::Handler && layout_name
         prepend_formats(template.format)
-        render_props_template(context, template, options[:layout], options[:locals])
+        render_props_template(view, template, layout_name, locals)
       else
-        super(context, options)
+        super
       end
     end
 
     def render_props_template(view, template, path, locals)
       layout_locals = locals.dup
-      layout_locals.delete(:json)
       layout_locals[:virtual_path_of_template] = template.virtual_path
 
       layout = resolve_props_layout(path, layout_locals.keys, [formats.first])
-      body = layout.render(view, layout_locals) do |json|
-        locals[:json] = json
+      body = if layout
+        layout.render(view, layout_locals) do |json|
+          template.render(view, locals)
+        end
+      else
         template.render(view, locals)
       end
 
@@ -44,7 +40,7 @@ module Props
           end
         end
       when Proc
-        resolve_layout(layout.call(@lookup_context, formats), keys, formats)
+        resolve_props_layout(layout.call(@lookup_context, formats), keys, formats)
       else
         layout
       end
