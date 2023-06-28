@@ -8,8 +8,8 @@ module Props
     def self.call(template, source = nil)
       source ||= template.source
       # this juggling is required to keep line numbers right in the error
-      %{__already_defined = defined?(json); json||=Props::Template.new(self); #{source};
-        json.result! unless (__already_defined && __already_defined != "method")
+      %{ __finalize = !defined?(@__json); @__json ||= Props::Template.new(self); json = @__json; #{source};
+        json.result! if __finalize
       }
     end
   end

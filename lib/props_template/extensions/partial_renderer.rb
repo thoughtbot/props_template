@@ -81,7 +81,6 @@ module Props
       partial, pass_opts = [*options[:partial]]
       pass_opts ||= {}
       pass_opts[:locals] ||= {}
-      pass_opts[:locals][:json] = @builder
       pass_opts[:partial] = partial
       pass_opts[:formats] = [:json]
       pass_opts.delete(:handlers)
