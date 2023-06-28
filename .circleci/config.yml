@@ -10,6 +10,9 @@ executors:
   ruby27:
     docker:
       - image: circleci/ruby:2.7-node-browsers
+  ruby26:
+    docker:
+      - image: circleci/ruby:2.6-node-browsers
 
 jobs:
   props-template:
@@ -45,5 +48,9 @@ workflows:
                 - Gemfile.rails61
                 - Gemfile.rails70
               ruby-version:
+                - ruby26
                 - ruby27
                 - ruby30
+            exclude:
+              - gemfile: Gemfile.rails70
+                ruby-version: ruby26
