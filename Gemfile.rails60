@@ -1,6 +1,7 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 gemspec
 
-gem 'rspec'
-gem 'byebug'
-gem 'rails', '~> 6.0.0'
+gem "rspec"
+gem "byebug"
+gem "rails", "~> 6.0.0"
+gem "standard", group: [:development, :test]
