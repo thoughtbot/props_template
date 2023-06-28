@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.files    =   Dir['MIT-LICENSE', 'README.md', 'lib/**/*']
   s.test_files = Dir["spec/*"]
 
-  s.required_ruby_version = '>= 2.5'
+  s.required_ruby_version = '>= 2.7'
 
   s.add_dependency 'activesupport', '>= 6.0.0'
   s.add_dependency 'actionview', '>= 6.0.0'
