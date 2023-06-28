@@ -13,7 +13,7 @@ module Props
       layout_locals = locals.dup
       layout_locals[:virtual_path_of_template] = template.virtual_path
 
-      layout = resolve_props_layout(path, layout_locals.keys, [formats.first])
+      layout = resolve_layout(path, layout_locals.keys, [formats.first])
       body = if layout
         layout.render(view, layout_locals) do |json|
           template.render(view, locals)
@@ -23,27 +23,6 @@ module Props
       end
 
       build_rendered_template(body, template)
-    end
-
-    def resolve_props_layout(layout, keys, formats)
-      details = @details.dup
-      details[:formats] = formats
-
-      case layout
-      when String
-        begin
-          if layout.start_with?("/")
-            ActiveSupport::Deprecation.warn "Rendering layouts from an absolute path is deprecated."
-            @lookup_context.with_fallbacks.find_template(layout, nil, false, [], details)
-          else
-            @lookup_context.find_template(layout, nil, false, [], details)
-          end
-        end
-      when Proc
-        resolve_props_layout(layout.call(@lookup_context, formats), keys, formats)
-      else
-        layout
-      end
     end
   end
 end
