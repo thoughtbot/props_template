@@ -1,13 +1,13 @@
-require_relative '../support/helper'
-require_relative '../support/rails_helper'
+require_relative "../support/helper"
+require_relative "../support/rails_helper"
 
-RSpec.describe 'Props::Template fragments' do
+RSpec.describe "Props::Template fragments" do
   before do
     Rails.cache.clear
-    @controller.request.path = '/some_url'
+    @controller.request.path = "/some_url"
   end
 
-  it 'defers work together with partials' do
+  it "defers work together with partials" do
     json = render(<<~PROPS)
       json.outer do
         json.inner(partial: ['simple', fragment: :simple], defer: :auto) do
@@ -23,16 +23,16 @@ RSpec.describe 'Props::Template fragments' do
         inner: {}
       },
       defers: [
-        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'}
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto"}
       ],
       fragments: [
-        {type: :simple, partial: 'simple', path: 'outer.inner'}
+        {type: :simple, partial: "simple", path: "outer.inner"}
       ]
     })
   end
 
-  it 'overrides existing props_at paramenters' do
-    @controller.request.path = '/some_url?props_at=outer'
+  it "overrides existing props_at paramenters" do
+    @controller.request.path = "/some_url?props_at=outer"
 
     json = render(<<~PROPS)
       json.outer do
@@ -49,10 +49,10 @@ RSpec.describe 'Props::Template fragments' do
         inner: {}
       },
       defers: [
-        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'}
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto"}
       ],
       fragments: [
-        {type: :simple, partial: 'simple', path: 'outer.inner'}
+        {type: :simple, partial: "simple", path: "outer.inner"}
       ]
     })
   end

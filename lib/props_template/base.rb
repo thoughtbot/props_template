@@ -1,8 +1,9 @@
-require 'oj'
-require 'active_support'
+require "oj"
+require "active_support"
 
 module Props
   class InvalidScopeForArrayError < StandardError; end
+
   class InvalidScopeForObjError < StandardError; end
 
   class Base
@@ -34,7 +35,7 @@ module Props
 
     def set!(key, value = nil)
       if @scope == :array
-        raise InvalidScopeForObjError.new('Attempted to set! on an array! scope')
+        raise InvalidScopeForObjError.new("Attempted to set! on an array! scope")
       end
 
       if @scope.nil?
@@ -80,19 +81,19 @@ module Props
       collection.each_with_index do |item, index|
         pass_opts = all_opts[index]
         handle_collection_item(collection, item, index, pass_opts) do
-          #todo: remove index?
+          # todo: remove index?
           yield item, index
         end
       end
     end
 
-    #todo, add ability to define contents of array
+    # todo, add ability to define contents of array
     def array!(collection, options = {})
       if @scope.nil?
         @scope = :array
         @stream.push_array
       else
-        raise InvalidScopeForArrayError.new('array! expects exclusive use of this block')
+        raise InvalidScopeForArrayError.new("array! expects exclusive use of this block")
       end
 
       handle_collection(collection, options) do |item, index|
@@ -107,10 +108,8 @@ module Props
     def result!
       if @scope.nil?
         @stream.push_object
-        @stream.pop
-      else
-        @stream.pop
       end
+      @stream.pop
 
       json = @stream.raw_json
       @stream.reset

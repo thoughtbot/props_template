@@ -1,12 +1,12 @@
-require_relative '../support/helper'
-require_relative '../support/rails_helper'
+require_relative "../support/helper"
+require_relative "../support/rails_helper"
 
-RSpec.describe('searching the template') do
+RSpec.describe("searching the template") do
   before do
-    @controller.request.path = '/some_url'
+    @controller.request.path = "/some_url"
   end
 
-  it 'finds the correct node and merges it to the top' do
+  it "finds the correct node and merges it to the top" do
     json = render(<<~PROPS)
       json.data(search: ['data', 'comment', 'details']) do
         json.comment do
@@ -20,13 +20,13 @@ RSpec.describe('searching the template') do
 
     expect(json).to eql_json({
       data: {
-        name: 'john'
+        name: "john"
       },
-      foo: 'bar'
+      foo: "bar"
     })
   end
 
-  it 'finds an empty child node and returns an empty object' do
+  it "finds an empty child node and returns an empty object" do
     json = render(<<~PROPS)
       json.data(search: ['data', 'inner']) do
         json.inner do
@@ -36,13 +36,12 @@ RSpec.describe('searching the template') do
     PROPS
 
     expect(json).to eql_json({
-      data: {
-      },
-      foo: 'bar'
+      data: {},
+      foo: "bar"
     })
   end
 
-  it 'searching for a non-existant child does not set the parent, simulating undefined in JS' do
+  it "searching for a non-existant child does not set the parent, simulating undefined in JS" do
     json = render(<<~PROPS)
       json.data(search: ['data', 'does_not_exist']) do
         json.inner do
@@ -52,11 +51,11 @@ RSpec.describe('searching the template') do
     PROPS
 
     expect(json).to eql_json({
-      foo: 'bar'
+      foo: "bar"
     })
   end
 
-  it 'searching for nil does nothing' do
+  it "searching for nil does nothing" do
     json = render(<<~PROPS)
       json.data(search: nil) do
         json.inner do
@@ -69,11 +68,11 @@ RSpec.describe('searching the template') do
       data: {
         inner: {}
       },
-      foo: 'bar'
+      foo: "bar"
     })
   end
 
-  it 'searching for an empty array means we found nothing' do
+  it "searching for an empty array means we found nothing" do
     json = render(<<~PROPS)
       json.data(search: []) do
         json.inner do
@@ -83,11 +82,11 @@ RSpec.describe('searching the template') do
     PROPS
 
     expect(json).to eql_json({
-      foo: 'bar'
+      foo: "bar"
     })
   end
 
-  it 'searching for a child node with siblings in back' do
+  it "searching for a child node with siblings in back" do
     json = render(<<~PROPS)
       json.outer(search: ['outer', 'inner']) do
         json.inner do
@@ -108,8 +107,7 @@ RSpec.describe('searching the template') do
     })
   end
 
-
-  it 'searching for a child node with siblings in front' do
+  it "searching for a child node with siblings in front" do
     json = render(<<-PROPS)
       json.outer(search: ['outer', 'inner']) do
         json.bad do
@@ -130,7 +128,7 @@ RSpec.describe('searching the template') do
     })
   end
 
-  it 'searches on multiple siblings' do
+  it "searches on multiple siblings" do
     json = render(<<-PROPS)
       json.outer(search: ['outer', 'inner']) do
         json.inner do
@@ -150,12 +148,12 @@ RSpec.describe('searching the template') do
         foo: 32
       },
       first: {
-        bar: 'cool'
+        bar: "cool"
       }
     })
   end
 
-  it 'reenables search functionality at the contents of found obj nodes' do
+  it "reenables search functionality at the contents of found obj nodes" do
     json = render(<<-PROPS)
       json.outer(search: ['outer']) do
         json.inner(search: ['inner', 'foo']) do
@@ -169,13 +167,13 @@ RSpec.describe('searching the template') do
     expect(json).to eql_json({
       outer: {
         inner: {
-          firstName: 'john'
+          firstName: "john"
         }
       }
     })
   end
 
-  it 'ignores search functionality in between levels of traversal' do
+  it "ignores search functionality in between levels of traversal" do
     json = render(<<-PROPS)
       json.outer(search: ['outer', 'inner', 'foo']) do
         json.inner(search: ['does_not_exist']) do
@@ -188,12 +186,12 @@ RSpec.describe('searching the template') do
 
     expect(json).to eql_json({
       outer: {
-        firstName: 'john'
+        firstName: "john"
       }
     })
   end
 
-  it 'find the correct node in a partial' do
+  it "find the correct node in a partial" do
     json = render(<<~PROPS)
       json.data(search: ['data', 'comment', 'details']) do
         json.comment(partial: 'comment') do
@@ -203,12 +201,12 @@ RSpec.describe('searching the template') do
 
     expect(json).to eql_json({
       data: {
-        body: 'hello world'
+        body: "hello world"
       }
     })
   end
 
-  it 'finds a subtree' do
+  it "finds a subtree" do
     json = render(<<-PROPS)
       json.outer(search: ['outer','inner', 'deep']) do
         json.inner do
@@ -230,7 +228,7 @@ RSpec.describe('searching the template') do
     })
   end
 
-  it 'searching for a leaf node is unsupported' do
+  it "searching for a leaf node is unsupported" do
     json = render(<<-PROPS)
       json.outer(search: ['outer', 'inner', 'foo']) do
         json.inner do
@@ -241,12 +239,11 @@ RSpec.describe('searching the template') do
     PROPS
 
     expect(json).to eql_json({
-      foo: 'bar'
+      foo: "bar"
     })
   end
 
-
-  it 'searching for a node beyond whats available is equivalent to not finding anything' do
+  it "searching for a node beyond whats available is equivalent to not finding anything" do
     json = render(<<-PROPS)
       json.outer(search: ['inner', 'a', 'b']) do
         json.inner do
@@ -257,11 +254,11 @@ RSpec.describe('searching the template') do
     PROPS
 
     expect(json).to eql_json({
-      foo: 'bar'
+      foo: "bar"
     })
   end
 
-  it 'finds an array' do
+  it "finds an array" do
     json = render(<<-PROPS)
       json.outer(search: ['outer', 'inner']) do
         json.inner do
@@ -280,7 +277,7 @@ RSpec.describe('searching the template') do
     })
   end
 
-  it 'searching for an item inside an array' do
+  it "searching for an item inside an array" do
     json = render(<<-PROPS)
       json.outer(search: ['outer', 0]) do
         json.array! ['hello', 'world'] do |item|
@@ -291,12 +288,12 @@ RSpec.describe('searching the template') do
 
     expect(json).to eql_json({
       outer: {
-        foo: 'hello'
-      },
+        foo: "hello"
+      }
     })
   end
 
-  it 'searching for an node beyond an array' do
+  it "searching for an node beyond an array" do
     json = render(<<-PROPS)
       json.outer(search: ['outer', 'inner', 1, 'foo']) do
         json.inner do
@@ -316,7 +313,7 @@ RSpec.describe('searching the template') do
     })
   end
 
-  it 'searching for an node outside the length of the array, is equivalent to not finding anything' do
+  it "searching for an node outside the length of the array, is equivalent to not finding anything" do
     json = render(<<-PROPS)
       json.outer(search: ['inner', 10, 'foo']) do
         json.inner do
@@ -331,11 +328,11 @@ RSpec.describe('searching the template') do
     PROPS
 
     expect(json).to eql_json({
-      foo: 'bar'
+      foo: "bar"
     })
   end
 
-  it 'searching for an node outside the length of the array, is equivalent to not finding anything' do
+  it "searching for an node outside the length of the array, is equivalent to not finding anything" do
     json = render(<<-PROPS)
       json.outer(search: ['outer', 'inner', 10, 'foo']) do
         json.inner do
@@ -350,11 +347,11 @@ RSpec.describe('searching the template') do
     PROPS
 
     expect(json).to eql_json({
-      foo: 'bar'
+      foo: "bar"
     })
   end
 
-  it 'searching for nested array' do
+  it "searching for nested array" do
     json = render(<<-PROPS)
       json.outer(search: ['outer', 'inner', 1, 'foo']) do
         json.inner do
@@ -372,11 +369,12 @@ RSpec.describe('searching the template') do
     expect(json).to eql_json({
       outer: [
         {bar: 1},
-        {bar: 5},
-      ]})
+        {bar: 5}
+      ]
+    })
   end
 
-  it 'searching for object inside a nested array' do
+  it "searching for object inside a nested array" do
     json = render(<<-PROPS)
       json.outer(search: ['outer','inner', 1, 'foo', 0]) do
         json.inner do
@@ -396,8 +394,8 @@ RSpec.describe('searching the template') do
     })
   end
 
-  context 'when searching through a partial' do
-    it 'returns the correct node in an object' do
+  context "when searching through a partial" do
+    it "returns the correct node in an object" do
       json = render(<<~PROPS)
         json.data(search: ['data', 'comment', 'details']) do
           json.comment(partial: 'comment') do
@@ -407,12 +405,12 @@ RSpec.describe('searching the template') do
 
       expect(json).to eql_json({
         data: {
-          body: 'hello world'
+          body: "hello world"
         }
       })
     end
 
-    it 'ignores the fragment option' do
+    it "ignores the fragment option" do
       json = render(<<~PROPS)
         json.data(search: ['data', 'comment', 'details']) do
           json.comment(partial: ['comment', fragment: 'foobar']) do
@@ -423,13 +421,13 @@ RSpec.describe('searching the template') do
 
       expect(json).to eql_json({
         data: {
-          body: 'hello world'
+          body: "hello world"
         },
         fragments: []
       })
     end
 
-    it 'passes the found child obj options back to the parent' do
+    it "passes the found child obj options back to the parent" do
       json = render(<<~PROPS)
         json.data(search: ['data', 'comment']) do
           json.comment(partial: 'comment') do
@@ -439,15 +437,15 @@ RSpec.describe('searching the template') do
 
       expect(json).to eql_json({
         data: {
-          title: 'some title',
+          title: "some title",
           details: {
-            body: 'hello world'
+            body: "hello world"
           }
         }
       })
     end
 
-    it 'passes the found child obj in array options back to the parent' do
+    it "passes the found child obj in array options back to the parent" do
       json = render(<<~PROPS)
         json.data(search: ['data', 'comment', 1]) do
           json.comment do
@@ -459,12 +457,12 @@ RSpec.describe('searching the template') do
 
       expect(json).to eql_json({
         data: {
-          email: 'world',
+          email: "world"
         }
       })
     end
 
-    it 'returns the correct node in an array' do
+    it "returns the correct node in an array" do
       json = render(<<~PROPS)
         json.data(search: ['data', 'comment', 0]) do
           json.comment do
@@ -476,12 +474,12 @@ RSpec.describe('searching the template') do
 
       expect(json).to eql_json({
         data: {
-          foo: 'bar'
+          foo: "bar"
         }
       })
     end
 
-    it 'returns the correct node beyond an array' do
+    it "returns the correct node beyond an array" do
       json = render(<<~PROPS)
         json.data(search: ['data','comment', 0, 'details']) do
           json.comment do
@@ -493,12 +491,12 @@ RSpec.describe('searching the template') do
 
       expect(json).to eql_json({
         data: {
-          body: 'hello world'
+          body: "hello world"
         }
       })
     end
 
-    it 'returns the correct node across nested partials' do
+    it "returns the correct node across nested partials" do
       json = render(<<~PROPS)
         json.data(search: ['data', 'comment', 'details', 'contact', 'phone']) do
           json.comment(partial: 'complex') do
@@ -508,13 +506,13 @@ RSpec.describe('searching the template') do
 
       expect(json).to eql_json({
         data: {
-          home: '111',
-          cell: '222'
+          home: "111",
+          cell: "222"
         }
       })
     end
 
-    it 'returns the correct node across nested partials' do
+    it "returns the correct node across nested partials" do
       json = render(<<~PROPS)
         json.data(search: ['data', 'comments', 0, 0, 'details', 'contact', 'phone']) do
           opts = {
@@ -528,8 +526,8 @@ RSpec.describe('searching the template') do
 
       expect(json).to eql_json({
         data: {
-          home: '111',
-          cell: '222'
+          home: "111",
+          cell: "222"
         }
       })
     end

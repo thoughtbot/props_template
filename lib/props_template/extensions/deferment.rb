@@ -17,7 +17,7 @@ module Props
       }
 
       if item
-        type = Proc === type ? type.call(item) : type
+        type = (Proc === type) ? type.call(item) : type
       end
 
       if type
@@ -44,10 +44,10 @@ module Props
       end
 
       request_path = @base.context.controller.request.fullpath
-      path = @base.traveled_path.join('.')
+      path = @base.traveled_path.join(".")
       uri = ::URI.parse(request_path)
-      qry = ::URI.decode_www_form(uri.query || '')
-        .reject{|x| x[0] == 'props_at' }
+      qry = ::URI.decode_www_form(uri.query || "")
+        .reject { |x| x[0] == "props_at" }
         .push(["props_at", path])
 
       uri.query = ::URI.encode_www_form(qry)
@@ -55,7 +55,7 @@ module Props
       deferral = {
         url: uri.to_s,
         path: path,
-        type: type.to_s,
+        type: type.to_s
       }
 
       # camelize for JS land

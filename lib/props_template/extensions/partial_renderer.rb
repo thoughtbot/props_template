@@ -1,4 +1,4 @@
-require 'action_view'
+require "action_view"
 
 module Props
   class RenderedTemplate
@@ -22,7 +22,6 @@ module Props
                                "and is followed by any combination of letters, numbers and underscores."
     IDENTIFIER_ERROR_MESSAGE = "The partial name (%s) is not a valid Ruby identifier; " \
                                "make sure your partial name starts with underscore."
-
 
     def initialize(base, context, builder)
       @context = context
@@ -67,7 +66,7 @@ module Props
       template_keys = retrieve_template_keys(partial_opts)
       details = extract_details(partial_opts)
 
-      prefixes = partial.include?(?/) ? [] : @context.lookup_context.prefixes
+      prefixes = partial.include?("/") ? [] : @context.lookup_context.prefixes
       @context.lookup_context.find_template(partial, prefixes, true, template_keys, details)
     end
 
@@ -86,7 +85,7 @@ module Props
       pass_opts.delete(:handlers)
 
       if !(String === partial)
-        raise ArgumentError.new(INVALID_PARTIAL_MESSAGE % (partial.inspect))
+        raise ArgumentError.new(INVALID_PARTIAL_MESSAGE % partial.inspect)
       end
 
       pass_opts
@@ -120,15 +119,15 @@ module Props
     end
 
     def raise_invalid_option_as(as)
-      raise ArgumentError.new(OPTION_AS_ERROR_MESSAGE % (as))
+      raise ArgumentError.new(OPTION_AS_ERROR_MESSAGE % as)
     end
 
     def raise_invalid_identifier(path)
-      raise ArgumentError.new(IDENTIFIER_ERROR_MESSAGE % (path))
+      raise ArgumentError.new(IDENTIFIER_ERROR_MESSAGE % path)
     end
 
     def retrieve_variable(path)
-      base = path[-1] == "/" ? "" : File.basename(path)
+      base = (path[-1] == "/") ? "" : File.basename(path)
       raise_invalid_identifier(path) unless base =~ /\A_?(.*?)(?:\.\w+)*\z/
       $1.to_sym
     end
@@ -152,7 +151,7 @@ module Props
 
         locals[as] = item
 
-        if fragment_name = rest[:fragment]
+        if (fragment_name = rest[:fragment])
           rest[:fragment] = fragment_name.to_s
         end
       end

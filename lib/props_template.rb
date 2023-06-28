@@ -1,17 +1,17 @@
-require 'props_template/base'
-require 'props_template/extensions/partial_renderer'
-require 'props_template/extensions/cache'
-require 'props_template/extensions/deferment'
-require 'props_template/extensions/fragment'
-require 'props_template/base_with_extensions'
-require 'props_template/extension_manager'
-require 'active_support/core_ext/string/output_safety'
-require 'active_support/core_ext/array'
-require 'props_template/searcher'
-require 'props_template/handler'
-require 'props_template/version'
+require "props_template/base"
+require "props_template/extensions/partial_renderer"
+require "props_template/extensions/cache"
+require "props_template/extensions/deferment"
+require "props_template/extensions/fragment"
+require "props_template/base_with_extensions"
+require "props_template/extension_manager"
+require "active_support/core_ext/string/output_safety"
+require "active_support/core_ext/array"
+require "props_template/searcher"
+require "props_template/handler"
+require "props_template/version"
 
-require 'active_support'
+require "active_support"
 
 module Props
   class Template
@@ -19,7 +19,7 @@ module Props
       attr_accessor :template_lookup_options
     end
 
-    self.template_lookup_options = { handlers: [:props] }
+    self.template_lookup_options = {handlers: [:props]}
 
     delegate :result!, :array!,
       :deferred!,
@@ -34,7 +34,7 @@ module Props
     end
 
     def set!(key, options = {}, &block)
-      if block_given? && options[:search] && !@builder.is_a?(Searcher)
+      if block && options[:search] && !@builder.is_a?(Searcher)
 
         prev_builder = @builder
         @builder = Searcher.new(self, options[:search], @context)
@@ -60,4 +60,4 @@ module Props
   end
 end
 
-require 'props_template/railtie' if defined?(Rails)
+require "props_template/railtie" if defined?(Rails)

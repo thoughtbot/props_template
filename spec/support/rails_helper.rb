@@ -4,9 +4,9 @@ require "active_support/core_ext/class/attribute_accessors"
 require "active_support/cache/memory_store"
 require "active_support/json"
 
-require 'action_view'
-require 'action_view/testing/resolvers'
-require 'action_view/template/resolver'
+require "action_view"
+require "action_view/testing/resolvers"
+require "action_view/template/resolver"
 
 class FakeView < ActionView::Base
   # include Rails.application.routes.url_helpers
@@ -25,15 +25,20 @@ class FakeView < ActionView::Base
   cattr_accessor :request_forgery
   self.request_forgery = false
 
-  def view_cache_dependencies; []; end
-  def protect_against_forgery?; false; end
+  def view_cache_dependencies
+    []
+  end
+
+  def protect_against_forgery?
+    false
+  end
 
   def form_authenticity_token
     "secret"
   end
 
   def combined_fragment_cache_key(key)
-    [ :views, key ]
+    [:views, key]
   end
 
   def asset_pack_path(asset)
@@ -47,11 +52,11 @@ class << Rails
   end
 end
 
-def render(source, options={})
+def render(source, options = {})
   @controller.cache_store = Rails.cache
-  view_path = File.join(File.dirname(__FILE__),'../fixtures')
+  view_path = File.join(File.dirname(__FILE__), "../fixtures")
   file_resolver = ActionView::FileSystemResolver.new(view_path)
-  lookup_context = ActionView::LookupContext.new([ file_resolver ], {}, [""])
+  lookup_context = ActionView::LookupContext.new([file_resolver], {}, [""])
   lookup_context.formats = [:json]
   view = FakeView.new(lookup_context, {}, @controller)
   view.assign(options.fetch(:assigns, {}))
@@ -66,4 +71,3 @@ RSpec.configure do |config|
     @controller = ActionView::TestCase::TestController.new
   end
 end
-

@@ -1,12 +1,12 @@
-require_relative '../support/helper'
-require_relative '../support/rails_helper'
+require_relative "../support/helper"
+require_relative "../support/rails_helper"
 
-RSpec.describe 'Props::Template' do
+RSpec.describe "Props::Template" do
   before do
-    @controller.request.path = '/some_url'
+    @controller.request.path = "/some_url"
   end
 
-  it 'returns the path of the node its called from' do
+  it "returns the path of the node its called from" do
     json = render(<<~PROPS)
       json.data do
         json.comment do
@@ -21,10 +21,10 @@ RSpec.describe 'Props::Template' do
       data: {
         comment: {
           fullDetails: {
-            foo: 'data.comment.full_details'
+            foo: "data.comment.full_details"
           }
         }
-      },
+      }
     })
   end
 end

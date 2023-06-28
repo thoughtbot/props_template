@@ -7,7 +7,7 @@ module Props
         end
 
         def member_by(attribute, value)
-          raise NotImplementedError, 'Implement member_by(attr, value) in your own delegate'
+          raise NotImplementedError, "Implement member_by(attr, value) in your own delegate"
         end
       end
     end

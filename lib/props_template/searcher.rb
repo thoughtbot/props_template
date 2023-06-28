@@ -2,7 +2,7 @@ module Props
   class Searcher
     attr_reader :builder, :context, :fragments, :traveled_path
 
-    def initialize(builder, path=[], context = nil)
+    def initialize(builder, path = [], context = nil)
       @search_path = path
       @depth = 0
       @context = context
@@ -24,7 +24,7 @@ module Props
     def found!
       pass_opts = @found_options.clone || {}
       pass_opts.delete(:defer)
-      traveled_path = @traveled_path[1..-1] || []
+      traveled_path = @traveled_path[1..] || []
       if !traveled_path.empty?
         pass_opts[:path_suffix] = traveled_path
       end
@@ -36,8 +36,8 @@ module Props
       yield
     end
 
-    def set!(key, options={}, &block)
-      return if @found_block || !block_given?
+    def set!(key, options = {}, &block)
+      return if @found_block || !block
 
       if @search_path[@depth] == key.to_s
         @traveled_path.push(key)
@@ -64,7 +64,7 @@ module Props
       return if @found_block
 
       key_index = @search_path[@depth]
-      id_name, id_val = key_index.to_s.split('=')
+      id_name, id_val = key_index.to_s.split("=")
 
       if id_val
         id_val = id_val.to_i
@@ -80,7 +80,7 @@ module Props
 
         if @depth == @search_path.size - 1
           @found_options = pass_opts
-          @found_block = Proc.new {
+          @found_block = proc {
             yield item, 0
           }
           return

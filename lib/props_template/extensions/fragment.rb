@@ -2,7 +2,7 @@ module Props
   class Fragment
     attr_reader :fragments
 
-    def initialize(base, fragments=[])
+    def initialize(base, fragments = [])
       @base = base
       @fragments = fragments
     end
@@ -14,11 +14,11 @@ module Props
 
       if String === fragment || Symbol === fragment
         fragment_name = fragment.to_s
-        path = @base.traveled_path.join('.')
+        path = @base.traveled_path.join(".")
         @name = fragment_name
 
         @fragments.push(
-          { type: fragment_name, partial: partial_name, path: path }
+          {type: fragment_name, partial: partial_name, path: path}
         )
       end
     end

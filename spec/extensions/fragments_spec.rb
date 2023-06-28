@@ -1,8 +1,8 @@
-require_relative '../support/helper'
-require_relative '../support/rails_helper'
+require_relative "../support/helper"
+require_relative "../support/rails_helper"
 
-RSpec.describe 'Props::Template fragments' do
-  it 'renders with a partial and populates fragments' do
+RSpec.describe "Props::Template fragments" do
+  it "renders with a partial and populates fragments" do
     json = render(<<~PROPS)
       json.outer do
         json.inner(partial: ['simple', fragment: :simple]) do
@@ -17,20 +17,20 @@ RSpec.describe 'Props::Template fragments' do
     expect(json).to eql_json({
       outer: {
         inner: {
-          foo: 'bar'
+          foo: "bar"
         },
         inner2: {
-          foo: 'bar'
+          foo: "bar"
         }
       },
       fragments: [
-        { type: :simple, partial: 'simple', path: 'outer.inner' },
-        { type: :simple, partial: 'simple', path: 'outer.inner2' }
+        {type: :simple, partial: "simple", path: "outer.inner"},
+        {type: :simple, partial: "simple", path: "outer.inner2"}
       ]
     })
   end
 
-  it 'renders with a partial and populates fragments even when caching' do
+  it "renders with a partial and populates fragments even when caching" do
     render(<<~PROPS)
       json.outer do
         json.inner(cache: 'foobar') do
@@ -55,17 +55,17 @@ RSpec.describe 'Props::Template fragments' do
       outer: {
         inner: {
           simple: {
-            foo: 'bar'
+            foo: "bar"
           }
-        },
+        }
       },
       fragments: [
-        { type: :simple, partial: 'simple', path: 'outer.inner.simple' }
+        {type: :simple, partial: "simple", path: "outer.inner.simple"}
       ]
     })
   end
 
-  it 'renders an array of partials with fragments' do
+  it "renders an array of partials with fragments" do
     json = render(<<~PROPS)
       users = [
         { name: 'joe', id: 1},
@@ -85,17 +85,17 @@ RSpec.describe 'Props::Template fragments' do
 
     expect(json).to eql_json({
       data: [
-        {firstName: 'joe'},
-        {firstName: 'foo'}
+        {firstName: "joe"},
+        {firstName: "foo"}
       ],
       fragments: [
-        { type: 'user_list_item', partial: 'customer', path: 'data.0' },
-        { type: 'user_list_item', partial: 'customer', path: 'data.1' }
+        {type: "user_list_item", partial: "customer", path: "data.0"},
+        {type: "user_list_item", partial: "customer", path: "data.1"}
       ]
     })
   end
 
-  it 'renders an array of partials with fragments using the :key as the path' do
+  it "renders an array of partials with fragments using the :key as the path" do
     json = render(<<~PROPS)
       users = [
         { name: 'joe', id: 1},
@@ -117,22 +117,22 @@ RSpec.describe 'Props::Template fragments' do
     expect(json).to eql_json({
       data: [
         {
-          firstName: 'joe',
+          firstName: "joe",
           id: 1
         },
         {
-          firstName: 'foo',
+          firstName: "foo",
           id: 2
         }
       ],
       fragments: [
-        { type: 'user', partial: 'customer', path: 'data.id=1' },
-        { type: 'user', partial: 'customer', path: 'data.id=2' }
+        {type: "user", partial: "customer", path: "data.id=1"},
+        {type: "user", partial: "customer", path: "data.id=2"}
       ]
     })
   end
 
-  it 'renders an array of partials with fragments using the :key as the method_name' do
+  it "renders an array of partials with fragments using the :key as the method_name" do
     json = render(<<~PROPS)
       klass = Struct.new(:email, :id)
 
@@ -156,19 +156,18 @@ RSpec.describe 'Props::Template fragments' do
     expect(json).to eql_json({
       data: [
         {
-          email: 'joe@red.com',
+          email: "joe@red.com",
           id: 1
         },
         {
-          email: 'foo@red.com',
+          email: "foo@red.com",
           id: 2
         }
       ],
       fragments: [
-        { type: 'user', partial: 'person', path: 'data.id=1' },
-        { type: 'user', partial: 'person', path: 'data.id=2' }
+        {type: "user", partial: "person", path: "data.id=1"},
+        {type: "user", partial: "person", path: "data.id=2"}
       ]
     })
   end
 end
-

@@ -21,9 +21,7 @@ module Props
       @context = context
     end
 
-    def context
-      @context
-    end
+    attr_reader :context
 
     def multi_fetch(keys, options = {})
       result = {}
@@ -38,12 +36,12 @@ module Props
 
       payload = {
         controller_name: controller.controller_name,
-        action_name: controller.action_name,
+        action_name: controller.action_name
       }
 
       read_caches = {}
 
-      ActiveSupport::Notifications.instrument('read_multi_fragments.action_view', payload) do |payload|
+      ActiveSupport::Notifications.instrument("read_multi_fragments.action_view", payload) do |payload|
         read_caches = ::Rails.cache.read_multi(*ckeys, options)
         payload[:read_caches] = read_caches
       end
@@ -60,31 +58,30 @@ module Props
       first_opts = all_options[0]
 
       if first_opts[:cache] && controller.perform_caching
-        keys = all_options.map{|i| i[:cache][0]}
+        keys = all_options.map { |i| i[:cache][0] }
         c_opts = first_opts[:cache][1]
         result = multi_fetch(keys, c_opts)
 
         all_options.map do |opts|
-          key =  opts[:cache][0]
+          key = opts[:cache][0]
 
           if result.key? key
             opts[:cache][1][:result] = result[key]
-            opts
-          else
-            opts
           end
+
+          opts
         end
       else
         all_options
       end
     end
 
-    #Copied from jbuilder
+    # Copied from jbuilder
     #
 
-    def cache(key=nil, options={})
+    def cache(key = nil, options = {})
       if controller.perform_caching
-        value = cache_fragment_for(key, options) do
+        cache_fragment_for(key, options) do
           yield
         end
       else
@@ -120,12 +117,11 @@ module Props
 
       if @context.respond_to?(:combined_fragment_cache_key)
         key = @context.combined_fragment_cache_key(key)
-      else
-        key = url_for(key).split('://', 2).last if ::Hash === key
+      elsif ::Hash === key
+        key = url_for(key).split("://", 2).last
       end
 
       ::ActiveSupport::Cache.expand_cache_key(key, :props)
     end
   end
 end
-

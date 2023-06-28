@@ -2,7 +2,7 @@ module Props
   class ExtensionManager
     attr_reader :base, :builder, :context
 
-    def initialize(base, defered=[], fragments=[])
+    def initialize(base, defered = [], fragments = [])
       @base = base
       @context = base.context
       @builder = base.builder
@@ -15,16 +15,14 @@ module Props
     def refine_options(options, item = nil)
       options = @partialer.refine_options(options, item)
       options = @deferment.refine_options(options, item)
-      options = Cache.refine_options(options, item)
-      options
+      Cache.refine_options(options, item)
     end
 
     def refine_all_item_options(all_options)
       return all_options if all_options.empty?
 
       all_options = @partialer.find_and_add_template(all_options)
-      all_options = @cache.multi_fetch_and_add_results(all_options)
-      all_options
+      @cache.multi_fetch_and_add_results(all_options)
     end
 
     def deferred
@@ -79,10 +77,10 @@ module Props
             yield
             meta = Oj.dump([deferred_paths, fragment_paths]).strip
             json_in_progress = base.stream.to_s
-            if json_in_progress[start] == ','
+            if json_in_progress[start] == ","
               start += 1
             end
-            raw = base.stream.to_s[start..-1].strip
+            raw = base.stream.to_s[start..].strip
             result = "#{meta}\n#{raw}"
           }
           result

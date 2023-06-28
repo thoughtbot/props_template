@@ -1,16 +1,15 @@
 # This was taken from jbuilder
-require 'props_template'
-
+require "props_template"
 
 dependency_tracker = false
 
 begin
-  require 'action_view'
-  require 'action_view/dependency_tracker'
+  require "action_view"
+  require "action_view/dependency_tracker"
   dependency_tracker = ::ActionView::DependencyTracker
 rescue LoadError
   begin
-    require 'cache_digests'
+    require "cache_digests"
     dependency_tracker = ::CacheDigests::DependencyTracker
   rescue LoadError
   end

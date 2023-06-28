@@ -1,8 +1,8 @@
-require_relative '../support/helper'
-require_relative '../support/rails_helper'
+require_relative "../support/helper"
+require_relative "../support/rails_helper"
 
-RSpec.describe 'Props::Template fragments' do
-  it 'renders an array of partials with fragments using the :key as the method_name' do
+RSpec.describe "Props::Template fragments" do
+  it "renders an array of partials with fragments using the :key as the method_name" do
     json = render(<<~PROPS)
       klass = Struct.new(:email, :id)
 
@@ -21,14 +21,14 @@ RSpec.describe 'Props::Template fragments' do
     expect(json).to eql_json({
       data: [
         {
-          email: 'joe@red.com',
+          email: "joe@red.com",
           id: 1
         },
         {
-          email: 'foo@red.com',
+          email: "foo@red.com",
           id: 2
         }
-      ],
+      ]
     })
   end
 end

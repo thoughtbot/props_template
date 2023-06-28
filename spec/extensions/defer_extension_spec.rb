@@ -1,13 +1,13 @@
-require_relative '../support/helper'
-require_relative '../support/rails_helper'
+require_relative "../support/helper"
+require_relative "../support/rails_helper"
 
-RSpec.describe 'Props::Template' do
+RSpec.describe "Props::Template" do
   before do
     Rails.cache.clear
-    @controller.request.path = '/some_url'
+    @controller.request.path = "/some_url"
   end
 
-  it 'defers a block from loading' do
+  it "defers a block from loading" do
     json = render(<<~PROPS)
       json.outer do
         json.inner(defer: :auto) do
@@ -25,12 +25,12 @@ RSpec.describe 'Props::Template' do
         inner: {}
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'}
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto"}
       ]
     })
   end
 
-  it 'defers a block from loading, and replaces with a custom placeholder' do
+  it "defers a block from loading, and replaces with a custom placeholder" do
     json = render(<<~PROPS)
       json.outer do
         json.inner(defer: [:auto, placeholder: []]) do
@@ -48,12 +48,12 @@ RSpec.describe 'Props::Template' do
         inner: []
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'}
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto"}
       ]
     })
   end
 
-  it 'defers a block from loading, and passes success and fail types' do
+  it "defers a block from loading, and passes success and fail types" do
     json = render(<<~PROPS)
       json.outer do
         json.inner(defer: [:auto, success_action: 'SUCCESS', fail_action: 'FAIL']) do
@@ -71,12 +71,12 @@ RSpec.describe 'Props::Template' do
         inner: nil
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto', successAction: 'SUCCESS', failAction: 'FAIL'}
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto", successAction: "SUCCESS", failAction: "FAIL"}
       ]
     })
   end
 
-  it 'defers a block from loading and populates with a manual type' do
+  it "defers a block from loading and populates with a manual type" do
     json = render(<<~PROPS)
       json.outer do
         json.inner(defer: :manual) do
@@ -94,12 +94,12 @@ RSpec.describe 'Props::Template' do
         inner: {}
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'manual'}
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "manual"}
       ]
     })
   end
 
-  it 'defers siblings from loading' do
+  it "defers siblings from loading" do
     json = render(<<~PROPS)
       json.outer do
         json.inner(defer: :auto) do
@@ -117,13 +117,13 @@ RSpec.describe 'Props::Template' do
         inner2: {}
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'},
-        {url: '/some_url?props_at=outer.inner2', path: 'outer.inner2', type: 'auto'}
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto"},
+        {url: "/some_url?props_at=outer.inner2", path: "outer.inner2", type: "auto"}
       ]
     })
   end
 
-  it 'defers an array from loading' do
+  it "defers an array from loading" do
     json = render(<<~PROPS)
       json.outer do
         json.inner(defer: :auto) do
@@ -141,12 +141,12 @@ RSpec.describe 'Props::Template' do
         inner: {}
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'},
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto"}
       ]
     })
   end
 
-  it 'defers array elements from loading, replacing it with an empty obj' do
+  it "defers array elements from loading, replacing it with an empty obj" do
     json = render(<<~PROPS)
       json.outer do
         json.inner do
@@ -169,13 +169,13 @@ RSpec.describe 'Props::Template' do
         ]
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner.0', path: 'outer.inner.0', type: 'auto'},
-        {url: '/some_url?props_at=outer.inner.1', path: 'outer.inner.1', type: 'auto'},
+        {url: "/some_url?props_at=outer.inner.0", path: "outer.inner.0", type: "auto"},
+        {url: "/some_url?props_at=outer.inner.1", path: "outer.inner.1", type: "auto"}
       ]
     })
   end
 
-  it 'defers array elements from loading, populating with a id=xyz when collection responds_to :key and the array element is a hash' do
+  it "defers array elements from loading, populating with a id=xyz when collection responds_to :key and the array element is a hash" do
     json = render(<<~PROPS)
       collection = [
         {id: 1},
@@ -205,13 +205,13 @@ RSpec.describe 'Props::Template' do
         ]
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner.id%3D1', path: 'outer.inner.id=1', type: 'auto'},
-        {url: '/some_url?props_at=outer.inner.id%3D2', path: 'outer.inner.id=2', type: 'auto'},
+        {url: "/some_url?props_at=outer.inner.id%3D1", path: "outer.inner.id=1", type: "auto"},
+        {url: "/some_url?props_at=outer.inner.id%3D2", path: "outer.inner.id=2", type: "auto"}
       ]
     })
   end
 
-  it 'defers array elements from loading, populating with a id=xyz when collection responds_to :key and the array element is an object' do
+  it "defers array elements from loading, populating with a id=xyz when collection responds_to :key and the array element is an object" do
     json = render(<<~PROPS)
       klass = Struct.new(:id)
       collection = [
@@ -242,13 +242,13 @@ RSpec.describe 'Props::Template' do
         ]
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner.id%3D1', path: 'outer.inner.id=1', type: 'auto'},
-        {url: '/some_url?props_at=outer.inner.id%3D2', path: 'outer.inner.id=2', type: 'auto'},
+        {url: "/some_url?props_at=outer.inner.id%3D1", path: "outer.inner.id=1", type: "auto"},
+        {url: "/some_url?props_at=outer.inner.id%3D2", path: "outer.inner.id=2", type: "auto"}
       ]
     })
   end
 
-  it 'manually defers array elements from loading, replacing it with an empty obj, and populating deferred with a manual type' do
+  it "manually defers array elements from loading, replacing it with an empty obj, and populating deferred with a manual type" do
     json = render(<<~PROPS)
       json.outer do
         json.inner do
@@ -271,13 +271,13 @@ RSpec.describe 'Props::Template' do
         ]
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner.0', path: 'outer.inner.0', type: 'manual'},
-        {url: '/some_url?props_at=outer.inner.1', path: 'outer.inner.1', type: 'manual'},
+        {url: "/some_url?props_at=outer.inner.0", path: "outer.inner.0", type: "manual"},
+        {url: "/some_url?props_at=outer.inner.1", path: "outer.inner.1", type: "manual"}
       ]
     })
   end
 
-  it 'selectively defers an array element from loading' do
+  it "selectively defers an array element from loading" do
     json = render(<<~PROPS)
       json.outer do
         json.inner do
@@ -301,12 +301,12 @@ RSpec.describe 'Props::Template' do
         ]
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner.0', path: 'outer.inner.0', type: 'auto'},
+        {url: "/some_url?props_at=outer.inner.0", path: "outer.inner.0", type: "auto"}
       ]
     })
   end
 
-  it 'defers multiple nodes at different depths' do
+  it "defers multiple nodes at different depths" do
     json = render(<<~PROPS)
       json.outer do
         json.inner do
@@ -334,13 +334,13 @@ RSpec.describe 'Props::Template' do
         sibling: {}
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner.0', path: 'outer.inner.0', type: 'auto'},
-        {url: '/some_url?props_at=outer.sibling', path: 'outer.sibling', type: 'auto'},
+        {url: "/some_url?props_at=outer.inner.0", path: "outer.inner.0", type: "auto"},
+        {url: "/some_url?props_at=outer.sibling", path: "outer.sibling", type: "auto"}
       ]
     })
   end
 
-  it 'does not defer nested nodes' do
+  it "does not defer nested nodes" do
     json = render(<<~PROPS)
       json.outer do
         json.inner defer: :auto do
@@ -358,12 +358,12 @@ RSpec.describe 'Props::Template' do
         inner: {}
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'},
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto"}
       ]
     })
   end
 
-  it 'defers is inactive in a search' do
+  it "defers is inactive in a search" do
     json = render(<<~PROPS)
       json.outer(search: ['outer', 'inner', 'greeting']) do
         json.inner defer: :auto do
@@ -378,14 +378,13 @@ RSpec.describe 'Props::Template' do
 
     expect(json).to eql_json({
       outer: {
-        foo: 'bar'
+        foo: "bar"
       },
-      deferred: [
-      ]
+      deferred: []
     })
   end
 
-  it 'makes the defer option inactive on the found node, this differs from every other extension' do
+  it "makes the defer option inactive on the found node, this differs from every other extension" do
     json = render(<<~PROPS)
       json.outer(search: ['outer', 'inner']) do
         json.inner defer: :auto do
@@ -401,14 +400,14 @@ RSpec.describe 'Props::Template' do
     expect(json).to eql_json({
       outer: {
         greeting: {
-          foo: 'bar'
+          foo: "bar"
         }
       },
       deferred: []
     })
   end
 
-  it 'is reenabled on the children of the found node' do
+  it "is reenabled on the children of the found node" do
     json = render(<<~PROPS)
       json.outer(search: ['outer', 'inner']) do
         json.inner do
@@ -426,12 +425,12 @@ RSpec.describe 'Props::Template' do
         greeting: {}
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner.greeting', path: 'outer.inner.greeting', type: 'auto'},
+        {url: "/some_url?props_at=outer.inner.greeting", path: "outer.inner.greeting", type: "auto"}
       ]
     })
   end
 
-  it 'is reenabled on the children of a found node' do
+  it "is reenabled on the children of a found node" do
     json = render(<<~PROPS)
       json.hit1 do
         json.hit2 do
@@ -457,12 +456,12 @@ RSpec.describe 'Props::Template' do
         }
       },
       deferred: [
-        {url: '/some_url?props_at=hit1.hit2.outer.inner.greeting', path: 'hit1.hit2.outer.inner.greeting', type: 'auto'},
+        {url: "/some_url?props_at=hit1.hit2.outer.inner.greeting", path: "hit1.hit2.outer.inner.greeting", type: "auto"}
       ]
     })
   end
 
-  it 'is included even when part of a cached subtree' do
+  it "is included even when part of a cached subtree" do
     props = <<~PROPS
       json.outer do
         json.inner(cache: 'some_key') do
@@ -485,7 +484,7 @@ RSpec.describe 'Props::Template' do
         }
       },
       deferred: [
-        {url: '/some_url?props_at=outer.inner.greeting', path: 'outer.inner.greeting', type: 'auto'},
+        {url: "/some_url?props_at=outer.inner.greeting", path: "outer.inner.greeting", type: "auto"}
       ]
     })
   end

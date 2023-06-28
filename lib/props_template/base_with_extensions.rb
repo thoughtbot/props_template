@@ -5,7 +5,7 @@ module Props
     def initialize(builder, context = nil, options = {})
       @context = context
       @builder = builder
-      #todo: refactor so deferred can be its own class
+      # todo: refactor so deferred can be its own class
       @em = ExtensionManager.new(self)
       @traveled_path = []
       @key_cache = {}
@@ -50,7 +50,7 @@ module Props
     end
 
     def set!(key, options = {}, &block)
-      if block_given?
+      if block
         options = @em.refine_options(options)
       end
 
@@ -60,7 +60,7 @@ module Props
     def handle_set_block(key, options)
       @traveled_path.push(key)
       n = 1
-      if suffix = options[:path_suffix]
+      if (suffix = options[:path_suffix])
         n += suffix.length
         @traveled_path.push(suffix)
       end
@@ -68,7 +68,7 @@ module Props
       super
 
       @traveled_path.pop(n)
-      return
+      nil
     end
 
     def handle_collection_item(collection, item, index, options)
@@ -80,14 +80,14 @@ module Props
         if id.nil?
           @traveled_path.push(index)
         else
-          @traveled_path.push("#{id.to_s}=#{val}")
+          @traveled_path.push("#{id}=#{val}")
         end
       end
 
       super
 
       @traveled_path.pop
-      return
+      nil
     end
 
     def refine_all_item_options(all_options)
@@ -97,7 +97,7 @@ module Props
     def refine_item_options(item, options)
       return options if options.empty?
 
-      if key = options[:key]
+      if (key = options[:key])
         val = if item.respond_to? key
           item.send(key)
         elsif item.is_a? Hash
@@ -111,4 +111,3 @@ module Props
     end
   end
 end
-

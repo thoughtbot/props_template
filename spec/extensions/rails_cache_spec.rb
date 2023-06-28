@@ -1,16 +1,16 @@
-require_relative '../support/helper'
-require_relative '../support/rails_helper'
-require 'active_support/testing/time_helpers'
+require_relative "../support/helper"
+require_relative "../support/rails_helper"
+require "active_support/testing/time_helpers"
 require "active_support/core_ext/string"
 
-RSpec.describe 'Props::Template caching' do
+RSpec.describe "Props::Template caching" do
   include ActiveSupport::Testing::TimeHelpers
 
   before do
     Rails.cache.clear
   end
 
-  it 'caches an object' do
+  it "caches an object" do
     json = render(<<~PROPS)
       json.author(cache: 'some_cache_key') do
         json.first_name 'hit'
@@ -23,18 +23,18 @@ RSpec.describe 'Props::Template caching' do
 
     expect(json).to eql_json({
       author: {
-        firstName: 'hit'
+        firstName: "hit"
       },
       author2: {
-        firstName: 'hit'
+        firstName: "hit"
       }
     })
   end
 
-  it 'caches an object with expiry' do
+  it "caches an object with expiry" do
     freeze_time
 
-    json = render(<<~PROPS)
+    render(<<~PROPS)
       opts = {
         cache: ['some_cache_key', expires_in: 1.minute]
       }
@@ -58,8 +58,8 @@ RSpec.describe 'Props::Template caching' do
 
     expect(json).to eql_json({
       author: {
-        firstName: 'hit'
-      },
+        firstName: "hit"
+      }
     })
 
     travel 31.seconds
@@ -76,12 +76,12 @@ RSpec.describe 'Props::Template caching' do
 
     expect(json).to eql_json({
       author: {
-        firstName: 'miss'
-      },
+        firstName: "miss"
+      }
     })
   end
 
-  it 'caches object in an array' do
+  it "caches object in an array" do
     json = render(<<~PROPS)
       json.authors do
         opts = {
@@ -98,15 +98,15 @@ RSpec.describe 'Props::Template caching' do
         {id: 1},
         {id: 2},
         {id: 1},
-        {id: 2},
+        {id: 2}
       ]
     })
   end
 
-  it 'caches object in an array with an expiry' do
+  it "caches object in an array with an expiry" do
     freeze_time
 
-    json = render(<<~PROPS)
+    render(<<~PROPS)
       json.authors do
         opts = {
           cache: [->(i) {['some_cache', i]}, expires_in: 1.minute]
@@ -132,7 +132,7 @@ RSpec.describe 'Props::Template caching' do
 
     expect(json).to eql_json({
       authors: [
-        {id: 1},
+        {id: 1}
       ]
     })
 
@@ -151,12 +151,12 @@ RSpec.describe 'Props::Template caching' do
 
     expect(json).to eql_json({
       authors: [
-        {id: 'miss'},
+        {id: "miss"}
       ]
     })
   end
 
-  it 'caches a partial' do
+  it "caches a partial" do
     json = render(<<~PROPS)
       opts = {
         partial: 'simple',
@@ -173,15 +173,15 @@ RSpec.describe 'Props::Template caching' do
 
     expect(json).to eql_json({
       author: {
-        foo: 'bar'
+        foo: "bar"
       },
       author2: {
-        foo: 'bar'
+        foo: "bar"
       }
     })
   end
 
-  it 'caches partials in an array' do
+  it "caches partials in an array" do
     json = render(<<~PROPS)
       json.authors do
         opts = {
@@ -199,12 +199,12 @@ RSpec.describe 'Props::Template caching' do
         {email: 1},
         {email: 2},
         {email: 1},
-        {email: 2},
+        {email: 2}
       ]
     })
   end
 
-  it 'has no effect when search is active' do
+  it "has no effect when search is active" do
     json = render(<<~PROPS)
       json.foo(cache:'some_key') do
         json.first_name 'dave'
@@ -223,21 +223,20 @@ RSpec.describe 'Props::Template caching' do
       end
     PROPS
 
-
     expect(json).to eql_json({
       foo: {
-        firstName: 'dave'
+        firstName: "dave"
       },
       bar: {
-        firstName: 'dave'
+        firstName: "dave"
       },
       author: {
-        firstName: 'john'
+        firstName: "john"
       }
     })
   end
 
-  it 'is reenabled at the found subtree' do
+  it "is reenabled at the found subtree" do
     json = render(<<~PROPS)
       json.foo(cache:'some_key') do
         json.first_name 'dave'
@@ -254,17 +253,16 @@ RSpec.describe 'Props::Template caching' do
       end
     PROPS
 
-
     expect(json).to eql_json({
       foo: {
-        firstName: 'dave'
+        firstName: "dave"
       },
       bar: {
-        firstName: 'dave'
+        firstName: "dave"
       },
       author: {
         details: {
-          firstName: 'dave'
+          firstName: "dave"
         }
       }
     })
