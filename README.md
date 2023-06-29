@@ -95,7 +95,7 @@ You can also add a [layout](#layouts).
 ### json.set! or json.\<your key here\>
 
 Defines the attribute or structure. All keys are automatically camelized lower
-by default. See [Change Key Format](#change_key_format) to change this behavior.
+by default. See [Change Key Format](#change-key-format) to change this behavior.
 
 ```ruby
 json.set! :author_details, {...options} do
@@ -611,7 +611,9 @@ See the [CONTRIBUTING] document. Thank you, [contributors]!
 
 ## Special Thanks
 
-Thanks to [turbostreamer](https://github.com/malomalo/turbostreamer) for the
-inspiration.
+Thanks to [turbostreamer], [oj], and [jbuilder] for the inspiration.
 
 [1]: https://github.com/thoughtbot/superglue
+[turbostreamer]: https://github.com/malomalo/turbostreamer
+[jbuilder]: https://github.com/rails/jbuilder
+[oj]: https://github.com/ohler55/oj/
