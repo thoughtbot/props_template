@@ -3,6 +3,7 @@ require "active_support/core_ext/array/access"
 require "active_support/core_ext/class/attribute_accessors"
 require "active_support/cache/memory_store"
 require "active_support/json"
+require "minitest"
 
 require "action_view"
 require "action_view/testing/resolvers"
