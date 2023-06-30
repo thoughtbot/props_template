@@ -1,5 +1,11 @@
 # News
 
+## 0.25.0 (Jun 28, 2023)
+  * Fix #1 issues templates without layouts were not rendering
+  * Refactor layout_patch to make a less invasive monkey patch
+  * Add ruby standard
+  * Add CONTRIBUTING.md
+
 ## 0.21.1 (Jan 6, 2022)
   * Add support for Rails 7
 
