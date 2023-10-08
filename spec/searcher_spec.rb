@@ -1,4 +1,4 @@
-require_relative "./support/helper"
+require_relative "support/helper"
 
 class Collection
   def initialize(ary, rspec)

@@ -1,5 +1,5 @@
-require_relative "./support/helper"
-require_relative "./support/rails_helper"
+require_relative "support/helper"
+require_relative "support/rails_helper"
 require "props_template/layout_patch"
 require "action_controller"
 

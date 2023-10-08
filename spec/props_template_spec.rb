@@ -1,4 +1,4 @@
-require_relative "./support/helper"
+require_relative "support/helper"
 
 RSpec.describe "Props::Base" do
   it "initializes" do
