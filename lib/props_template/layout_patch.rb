@@ -10,6 +10,12 @@ module Props
     end
 
     def render_props_template(view, template, path, locals)
+      view.instance_eval <<~RUBY, __FILE__, __LINE__ + 1
+        def virtual_path_of_template;"#{template.virtual_path}";end
+      RUBY
+
+      # Deprecated: Usage of virtual_path_of_template in local_assigns will
+      # be removed for a method definition above
       layout_locals = locals.dup
       layout_locals[:virtual_path_of_template] = template.virtual_path
 
