@@ -1,6 +1,9 @@
 # News
 
-## 0.25.0 (Jun 28, 2023)
+## 0.24.0 (Nov 4th, 2023)
+  * Turn the local assigns `virtual_path_of_template` that didn't work into a method on the view
+
+## 0.23.0 (Jun 28, 2023)
   * Fix #1 issues templates without layouts were not rendering
   * Refactor layout_patch to make a less invasive monkey patch
   * Add ruby standard
