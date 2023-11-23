@@ -13,11 +13,11 @@ RSpec.describe "Props::Template caching" do
   it "caches an object" do
     json = render(<<~PROPS)
       json.author(cache: 'some_cache_key') do
-        json.first_name 'hit'
+        json.firstName 'hit'
       end
 
       json.author2(cache: 'some_cache_key') do
-        json.first_name 'miss'
+        json.firstName 'miss'
       end
     PROPS
 
@@ -40,7 +40,7 @@ RSpec.describe "Props::Template caching" do
       }
 
       json.author(opts) do
-        json.first_name 'hit'
+        json.firstName 'hit'
       end
     PROPS
 
@@ -52,7 +52,7 @@ RSpec.describe "Props::Template caching" do
       }
 
       json.author(opts) do
-        json.first_name 'miss'
+        json.firstName 'miss'
       end
     PROPS
 
@@ -70,7 +70,7 @@ RSpec.describe "Props::Template caching" do
       }
 
       json.author(opts) do
-        json.first_name 'miss'
+        json.firstName 'miss'
       end
     PROPS
 
@@ -207,17 +207,17 @@ RSpec.describe "Props::Template caching" do
   it "has no effect when search is active" do
     json = render(<<~PROPS)
       json.foo(cache:'some_key') do
-        json.first_name 'dave'
+        json.firstName 'dave'
       end
 
       json.bar(cache:'some_key') do
-        json.first_name 'miss'
+        json.firstName 'miss'
       end
 
       json.author(search: ['author', 'details', 'name']) do
         json.details(cache: 'some_key') do
           json.name do
-            json.first_name 'john'
+            json.firstName 'john'
           end
         end
       end
@@ -239,16 +239,16 @@ RSpec.describe "Props::Template caching" do
   it "is reenabled at the found subtree" do
     json = render(<<~PROPS)
       json.foo(cache:'some_key') do
-        json.first_name 'dave'
+        json.firstName 'dave'
       end
 
       json.bar(cache:'some_key') do
-        json.first_name 'miss'
+        json.firstName 'miss'
       end
 
       json.author(search: ['author']) do
         json.details(cache: 'some_key') do
-          json.first_name 'john'
+          json.firstName 'john'
         end
       end
     PROPS

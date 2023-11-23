@@ -115,7 +115,6 @@ module Props
       @stream.reset
 
       @scope = nil
-      @key_cache = {}
       json
     end
   end

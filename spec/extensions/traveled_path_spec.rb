@@ -10,7 +10,7 @@ RSpec.describe "Props::Template" do
     json = render(<<~PROPS)
       json.data do
         json.comment do
-          json.full_details do
+          json.fullDetails do
             json.foo json.traveled_path!
           end
         end
@@ -21,7 +21,7 @@ RSpec.describe "Props::Template" do
       data: {
         comment: {
           fullDetails: {
-            foo: "data.comment.full_details"
+            foo: "data.comment.fullDetails"
           }
         }
       }

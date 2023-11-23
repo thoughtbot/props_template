@@ -1,5 +1,30 @@
 # News
 
+
+* PropsTemplate will no longer automatically `camelize(:lower)` on keys.
+Instead, be explicit about the keys we're serializing.
+
+For example: `json.currentUser` instead of `json.current_user`. This
+is backward breaking. To retain the current behavior, you can do this:
+
+```
+module PropsTemplateOverride
+  def format_key(key)
+    @key_cache ||= {}
+    @key_cache[key] ||= key.camelize(:lower)
+    @key_cache[key]
+  end
+
+  def result!
+    result = super
+    @key_cache = {}
+    result
+  end
+
+  ::Props::BaseWithExtensions.prepend self
+end
+```
+
 ## 0.24.0 (Nov 4th, 2023)
   * Turn the local assigns `virtual_path_of_template` that didn't work into a method on the view
 
