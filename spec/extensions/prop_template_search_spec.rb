@@ -158,7 +158,7 @@ RSpec.describe("searching the template") do
       json.outer(search: ['outer']) do
         json.inner(search: ['inner', 'foo']) do
           json.foo do
-            json.first_name 'john'
+            json.firstName 'john'
           end
         end
       end
@@ -178,7 +178,7 @@ RSpec.describe("searching the template") do
       json.outer(search: ['outer', 'inner', 'foo']) do
         json.inner(search: ['does_not_exist']) do
           json.foo do
-            json.first_name 'john'
+            json.firstName 'john'
           end
         end
       end

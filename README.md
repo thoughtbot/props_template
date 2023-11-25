@@ -31,7 +31,7 @@ json.flash flash.to_h
 json.menu do
   # By default, all keys will be formatted as camelCase. See #change_key_format
 
-  json.current_user do
+  json.currentUser do
     json.email current_user.email
     json.avatar current_user.avatar
     json.inbox current_user.messages.count
@@ -40,7 +40,7 @@ end
 
 json.dashboard(defer: :auto) do
   sleep 5
-  json.complex_post_metric 500
+  json.complexPostMetric 500
 end
 
 json.posts do
@@ -51,13 +51,13 @@ json.posts do
     json.array! paged_posts, key: :id do |post|
       json.id post.id
       json.description post.description
-      json.comments_count post.comments.count
-      json.edit_path edit_post_path(post)
+      json.commentsCount post.comments.count
+      json.editPath edit_post_path(post)
     end
   end
 
-  json.pagination_path posts_path
-  json.current paged_posts.current_page
+  json.paginationPath posts_path
+  json.current pagedPosts.current_page
   json.total @posts.count
 end
 
@@ -98,14 +98,14 @@ Defines the attribute or structure. All keys are automatically camelized lower
 by default. See [Change Key Format](#change-key-format) to change this behavior.
 
 ```ruby
-json.set! :author_details, {...options} do
-  json.set! :first_name, 'David'
+json.set! :authorDetails, {...options} do
+  json.set! :firstName, 'David'
 end
 
 or
 
-json.author_details, {...options} do
-  json.first_name 'David'
+json.authorDetails, {...options} do
+  json.firstName 'David'
 end
 
 
@@ -121,11 +121,11 @@ The inline form defines key and value
 
 ```ruby
 
-json.set! :first_name, 'David'
+json.set! :firstName, 'David'
 
 or
 
-json.first_name 'David'
+json.firstName 'David'
 
 # => { "firstName": "David" }
 ```
@@ -165,7 +165,7 @@ collection = [ {name: 'john'}, {name: 'jim'} ]
 
 json.details do
   json.array! collection, {...options} do |person|
-    json.first_name person[:name]
+    json.firstName person[:name]
   end
 end
 
@@ -348,7 +348,7 @@ Usage:
 
 ```ruby
 json.author(cache: "some_cache_key") do
-  json.first_name "tommy"
+  json.firstName "tommy"
 end
 
 #or
@@ -404,7 +404,7 @@ Usage:
 ```ruby
 json.dashboard(defer: :manual) do
   sleep 10
-  json.some_fancy_metric 42
+  json.someFancyMetric 42
 end
 
 
@@ -412,7 +412,7 @@ end
 
 json.dashboard(defer: [:manual, placeholder: {}]) do
   sleep 10
-  json.some_fancy_metric 42
+  json.someFancyMetric 42
 end
 ```
 
@@ -423,7 +423,7 @@ A auto option is available:
 ```ruby
 json.dashboard(defer: :auto) do
   sleep 10
-  json.some_fancy_metric 42
+  json.someFancyMetric 42
 end
 ```
 
@@ -490,7 +490,7 @@ json.data(search: traversal_path) do
 
     json.personal do
       json.name 'james'
-      json.zip_code 91210
+      json.zipCode 91210
     end
   end
 end
@@ -586,8 +586,8 @@ json.flash flash.to_h
 will render Layout first, then the template when `yield json` is used.
 
 ## Change key format
-By default, all keys will be formatted with `camelized(:lower)`. If you want to
-change this behavior, override it in an initializer:
+By default, keys are not formatted. If you want to change this behavior,
+override it in an initializer:
 
 ```ruby
 Props::BaseWithExtensions.class_eval do
