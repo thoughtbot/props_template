@@ -1,3 +1,3 @@
 module Props
-  VERSION = "0.24.0".freeze
+  VERSION = "0.30.0".freeze
 end
