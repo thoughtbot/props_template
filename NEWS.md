@@ -1,5 +1,6 @@
 # News
 
+## 0.30.0 (Nov 25, 2023)
 
 * PropsTemplate will no longer automatically `camelize(:lower)` on keys.
 Instead, be explicit about the keys we're serializing.
