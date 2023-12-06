@@ -29,8 +29,6 @@ conveniences and magic.
 json.flash flash.to_h
 
 json.menu do
-  # By default, all keys will be formatted as camelCase. See #change_key_format
-
   json.currentUser do
     json.email current_user.email
     json.avatar current_user.avatar
