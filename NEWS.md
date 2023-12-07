@@ -1,5 +1,16 @@
 # News
 
+## 0.31.0 (Dec 6, 2023)
+
+* PropsTemplate no longer adds a virtual_path_of_template method to your views.
+This is used by Superglue's generated `application.json.props`. This is a backward
+breaking change. To migrate, simply change the `componentIdentifer` in your
+`application.json.props` and update the `page_to_page_mapping.js` accordingly.
+
+````
+json.componentIdentifier "#{controller_path}/#{action_name}"
+````
+
 ## 0.30.0 (Nov 25, 2023)
 
 * PropsTemplate will no longer automatically `camelize(:lower)` on keys.
