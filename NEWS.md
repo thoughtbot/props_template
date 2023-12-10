@@ -1,5 +1,14 @@
 # News
 
+## 0.32.0 (Dec 9, 2023)
+
+Revert the removal of virtual_path_of_template, and renamed it to
+`active_template_virtual_path`. The reason for the removal was because we tried
+to replace it with "#{controller_path}/#{action_name}" in superglue for the
+component identifier, but that proved a bit too hairy. We also expose the
+method to all other template types as well, as using @virtual_path on HTML erbs
+from the view seemed too private.
+
 ## 0.31.0 (Dec 6, 2023)
 
 * PropsTemplate no longer adds a virtual_path_of_template method to your views.
