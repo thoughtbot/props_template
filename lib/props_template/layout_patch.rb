@@ -1,6 +1,12 @@
 module Props
   module LayoutPatch
     def render_template(view, template, layout_name, locals)
+      unless view.respond_to? :active_template_virtual_path
+        view.instance_eval <<~RUBY, __FILE__, __LINE__ + 1
+          def active_template_virtual_path; "#{template.virtual_path}";end
+        RUBY
+      end
+
       if template.respond_to?(:handler) && template.handler == Props::Handler && layout_name
         prepend_formats(template.format)
         render_props_template(view, template, layout_name, locals)
@@ -10,18 +16,10 @@ module Props
     end
 
     def render_props_template(view, template, path, locals)
-      view.instance_eval <<~RUBY, __FILE__, __LINE__ + 1
-        def virtual_path_of_template;"#{template.virtual_path}";end
-      RUBY
+      layout = resolve_layout(path, locals.keys, [formats.first])
 
-      # Deprecated: Usage of virtual_path_of_template in local_assigns will
-      # be removed for a method definition above
-      layout_locals = locals.dup
-      layout_locals[:virtual_path_of_template] = template.virtual_path
-
-      layout = resolve_layout(path, layout_locals.keys, [formats.first])
       body = if layout
-        layout.render(view, layout_locals) do |json|
+        layout.render(view, locals) do |json|
           template.render(view, locals)
         end
       else
