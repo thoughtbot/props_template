@@ -6,7 +6,7 @@ module Props
     initializer :props_template do
       ActiveSupport.on_load :action_view do
         Mime::Type.register "application/vnd.thoughtbot.props+json", :props
-        ActionView::Template.register_template_handler :props, Props::Handler
+        ActionView::Template.register_template_handler :pbuilder, Props::Handler
         require "props_template/dependency_tracker"
         require "props_template/layout_patch"
       end
