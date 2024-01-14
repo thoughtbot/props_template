@@ -3,7 +3,7 @@ require "active_support"
 module Props
   class Handler
     cattr_accessor :default_format
-    self.default_format = :json
+    self.default_format = :props
 
     def self.call(template, source = nil)
       source ||= template.source

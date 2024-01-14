@@ -81,7 +81,7 @@ module Props
       pass_opts ||= {}
       pass_opts[:locals] ||= {}
       pass_opts[:partial] = partial
-      pass_opts[:formats] = [:json]
+      pass_opts[:formats] = [:props]
       pass_opts.delete(:handlers)
 
       if !(String === partial)
