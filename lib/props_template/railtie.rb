@@ -10,5 +10,18 @@ module Props
         require "props_template/layout_patch"
       end
     end
+
+    module ::ActionController
+      module ApiRendering
+        include ActionView::Rendering
+      end
+    end
+
+    ActiveSupport.on_load :action_controller do
+      if name == "ActionController::API"
+        include ActionController::Helpers
+        include ActionController::ImplicitRender
+      end
+    end
   end
 end
