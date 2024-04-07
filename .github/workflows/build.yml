@@ -1,0 +1,35 @@
+name: Build
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '* * * * 1'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Ruby ${{ matrix.ruby }}. Rails ${{ matrix.version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ['3.3', '3.2', '3.1']
+        version: ['61', '70', '71', 'main']
+
+    runs-on: 'ubuntu-latest'
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - name: Setup project
+        run: |
+          mv Gemfile.${{ matrix.version }} Gemfile
+          bundle install
+          bundle update
+      - name: Run test
+        run: bundle exec rspec
+
