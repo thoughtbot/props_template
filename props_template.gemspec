@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 2.5"
 
-  s.add_dependency "activesupport", ">= 6.0.0"
-  s.add_dependency "actionview", ">= 6.0.0"
+  s.add_dependency "activesupport", ">= 6.1.0"
+  s.add_dependency "actionview", ">= 6.1.0"
   s.add_dependency "oj", ">= 3.9"
 end
