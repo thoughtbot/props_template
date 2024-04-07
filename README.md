@@ -71,7 +71,8 @@ gem 'props_template'
 
 and run `bundle`.
 
-Add the [core ext](#array-core-extension) to an initializer.
+Optionally add the [core ext](#array-core-extension) to an initializer if you
+want to [dig](#traverse) into your templates.
 
 ```ruby
 require 'props_template/core_ext'
