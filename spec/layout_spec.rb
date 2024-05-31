@@ -33,4 +33,14 @@ RSpec.describe "Props::Template" do
       expect(json.strip).to eql('{"success":"ok"}')
     end
   end
+
+  it "allows rendering of templates that do not have a virtual_path" do
+    view_path = File.join(File.dirname(__FILE__), "./fixtures")
+    controller = TestController.new
+    controller.prepend_view_path(view_path)
+
+    expect(
+      controller.render_to_string(plain: "some text")
+    ).to eql "some text"
+  end
 end

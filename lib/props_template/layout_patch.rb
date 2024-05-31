@@ -1,7 +1,7 @@
 module Props
   module LayoutPatch
     def render_template(view, template, layout_name, locals)
-      unless view.respond_to? :active_template_virtual_path
+      if !view.respond_to?(:active_template_virtual_path) && template.respond_to?(:virtual_path)
         view.instance_eval <<~RUBY, __FILE__, __LINE__ + 1
           def active_template_virtual_path; "#{template.virtual_path}";end
         RUBY
