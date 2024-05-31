@@ -1,5 +1,10 @@
 # News
 
+## 0.34.0 (May 31, 2024)
+
+Fix issue with `send_data` not working due to the `layout_patch` not accounting for
+inline templates.
+
 ## 0.32.0 (Dec 9, 2023)
 
 Revert the removal of virtual_path_of_template, and renamed it to
