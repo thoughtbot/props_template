@@ -299,7 +299,7 @@ RSpec.describe "Props::Template" do
     ])
   end
 
-  it "renders an array with :locals" do
+  it "renders an array with default :locals when locals is blank" do
     json = render(<<~PROPS)
       emails = [
         {value: 'joe@j.com'},
@@ -308,8 +308,6 @@ RSpec.describe "Props::Template" do
       json.array! emails, partial: ['simple_as', locals: {}] do
       end
     PROPS
-
-    puts json.inspect
 
     expect(json).to eql_json([
       {foo: "joe@j.com"},
