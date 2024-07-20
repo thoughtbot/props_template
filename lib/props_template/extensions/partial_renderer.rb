@@ -137,7 +137,7 @@ module Props
 
       partial, rest = [*options[:partial]]
       rest = (rest || {}).clone
-      locals = rest[:locals] || {}
+      locals = (rest[:locals] || {}).clone
       rest[:locals] = locals
 
       if item
