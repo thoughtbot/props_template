@@ -1,5 +1,9 @@
 # News
 
+## 0.35.0 (Jul 20, 2024)
+
+Fix issue with locals referring to an earlier item when using it in collections.
+
 ## 0.34.0 (May 31, 2024)
 
 Fix issue with `send_data` not working due to the `layout_patch` not accounting for
