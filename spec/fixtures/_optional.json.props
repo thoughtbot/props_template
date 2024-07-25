@@ -1,0 +1,7 @@
+json.optional! :email, -> { optional[:value] }
+json.optional! :something, -> { nil }
+
+json.optional! :emailAsObject do
+  json.optional! :email, -> { optional[:value] }
+  json.optional! :something, -> { nil }
+end

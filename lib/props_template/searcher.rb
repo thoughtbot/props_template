@@ -1,6 +1,9 @@
 module Props
   class Searcher
+    attr_accessor :contains
     attr_reader :builder, :context, :fragments, :traveled_path
+
+    delegate :transform_contain_keys, to: :builder!
 
     def initialize(builder, path = [], context = nil)
       @search_path = path
@@ -10,7 +13,12 @@ module Props
       @found_options = nil
       @builder = builder
       @traveled_path = []
+      @contains = nil
       @partialer = Partialer.new(self, context, builder)
+    end
+
+    def builder!
+      @builder
     end
 
     def deferred!
