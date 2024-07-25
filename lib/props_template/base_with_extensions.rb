@@ -7,6 +7,7 @@ module Props
       @builder = builder
       @em = ExtensionManager.new(self)
       @traveled_path = []
+
       super()
     end
 

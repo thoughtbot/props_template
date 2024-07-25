@@ -296,4 +296,52 @@ RSpec.describe "Props::Base" do
       }.to raise_error(Props::InvalidScopeForArrayError)
     end
   end
+
+  context "optional!" do
+    it "sets a value" do
+      json = Props::Base.new
+      json.optional! :foo, -> { "bar" }
+      attrs = json.result!.strip
+
+      expect(attrs).to eql_json({
+        foo: "bar"
+      })
+    end
+
+    it "sets a empty obj when block is empty" do
+      json = Props::Base.new
+      json.optional! :foo do
+      end
+      attrs = json.result!.strip
+
+      expect(attrs).to eql_json({
+        foo: {}
+      })
+    end
+
+    it "sets a empty obj when nested block is empty" do
+      json = Props::Base.new
+      json.optional! :foo do
+        json.optional! :bar do
+        end
+      end
+      attrs = json.result!.strip
+
+      expect(attrs).to eql_json({
+        foo: {
+          bar: {}
+        }
+      })
+    end
+
+    it "sets a null value" do
+      json = Props::Base.new
+      json.optional! :foo, -> { nil }
+      attrs = json.result!.strip
+
+      expect(attrs).to eql_json({
+        foo: nil
+      })
+    end
+  end
 end

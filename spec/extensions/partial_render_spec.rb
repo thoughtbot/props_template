@@ -323,4 +323,70 @@ RSpec.describe "Props::Template" do
 
     expect(json).to eql_json([])
   end
+
+  context "when locals with contains" do
+    it "renders only required attributes" do
+      json = render(<<~PROPS)
+        emails = [
+          {value: 'joe@j.com'},
+          {value: 'foo@f.com'},
+        ]
+        json.array! emails, partial: ['optional', locals: {contains: [:email]}] do
+        end
+      PROPS
+
+      expect(json).to eql_json([
+        {email: "joe@j.com"},
+        {email: "foo@f.com"}
+      ])
+    end
+
+    it "renders object with all nested attributes" do
+      json = render(<<~PROPS)
+        emails = [
+          {value: 'joe@j.com'},
+          {value: 'foo@f.com'},
+        ]
+        json.array! emails, partial: ['optional', locals: {contains: [emailAsObject: []]}] do
+        end
+      PROPS
+
+      expect(json).to eql_json([
+        {emailAsObject: {email: "joe@j.com", something: nil}},
+        {emailAsObject: {email: "foo@f.com", something: nil}}
+      ])
+    end
+
+    it "renders object with only required nested attributes" do
+      json = render(<<~PROPS)
+        emails = [
+          {value: 'joe@j.com'},
+          {value: 'foo@f.com'},
+        ]
+        json.array! emails, partial: ['optional', locals: {contains: [emailAsObject: [:email]]}] do
+        end
+      PROPS
+
+      expect(json).to eql_json([
+        {emailAsObject: {email: "joe@j.com"}},
+        {emailAsObject: {email: "foo@f.com"}}
+      ])
+    end
+
+    it "renders all attributes" do
+      json = render(<<~PROPS)
+        emails = [
+          {value: 'joe@j.com'},
+          {value: 'foo@f.com'},
+        ]
+        json.array! emails, partial: ['optional', locals: {contains: [:email, {emailAsObject: [:email]}, :something]}] do
+        end
+      PROPS
+
+      expect(json).to eql_json([
+        {email: "joe@j.com", something: nil, emailAsObject: {email: "joe@j.com"}},
+        {email: "foo@f.com", something: nil, emailAsObject: {email: "foo@f.com"}}
+      ])
+    end
+  end
 end

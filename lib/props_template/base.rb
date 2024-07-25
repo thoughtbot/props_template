@@ -7,9 +7,12 @@ module Props
   class InvalidScopeForObjError < StandardError; end
 
   class Base
+    attr_accessor :contains
+
     def initialize(encoder = nil)
       @stream = Oj::StringWriter.new(mode: :rails)
       @scope = nil
+      @contains = nil
     end
 
     def set_block_content!(options = {})
@@ -87,6 +90,21 @@ module Props
       end
     end
 
+    # builds structure of rendered optional attributes as hash
+    def transform_contain_keys(values)
+      return {} if values.blank?
+
+      values.each_with_object({}) do |item, acc|
+        if item.is_a?(Hash)
+          item.each do |key, value|
+            acc[key] = transform_contain_keys(value)
+          end
+        else
+          acc[item] = :present
+        end
+      end
+    end
+
     # todo, add ability to define contents of array
     def array!(collection, options = {})
       if @scope.nil?
@@ -103,6 +121,21 @@ module Props
       @scope = :array
 
       nil
+    end
+
+    # value should be lambda to avoid calculations before optional check
+    # if attribute should be rendered then call set with calculated value
+    def optional!(key, value = nil, &block)
+      return set!(key, value ? value.call : {}, &block) if contains.blank?
+
+      # traveled path without arra indexes
+      path = traveled_path.select { |item| item.is_a?(Symbol) }
+      # render if
+      # 1) "contains" hash contains key at required nesting
+      # 2) "contains" hash contains parent key at required nesting with all rendering attributes
+      render_attribute = contains.dig(*(path + [key])) || path.size > 0 && contains.dig(*path) == {}
+
+      set!(key, value ? value.call : {}, &block) if render_attribute
     end
 
     def result!

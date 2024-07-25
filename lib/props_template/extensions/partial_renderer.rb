@@ -140,6 +140,11 @@ module Props
       locals = (rest[:locals] || {}).clone
       rest[:locals] = locals
 
+      if rest
+        @base.contains ||= @base.transform_contain_keys(rest.dig(:locals, :contains))
+        rest[:locals][:contains] = @base.contains
+      end
+
       if item
         as = if !rest[:as]
           retrieve_variable(partial)
