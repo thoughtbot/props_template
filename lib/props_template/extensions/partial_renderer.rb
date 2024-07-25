@@ -82,7 +82,7 @@ module Props
       pass_opts[:locals] ||= {}
       pass_opts[:partial] = partial
       pass_opts[:formats] = [:json]
-      pass_opts.delete(:handlers)
+      pass_opts[:handlers] = [:props]
 
       if !(String === partial)
         raise ArgumentError.new(INVALID_PARTIAL_MESSAGE % partial.inspect)
