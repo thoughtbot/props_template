@@ -93,8 +93,7 @@ You can also add a [layout](#layouts).
 
 ### json.set! or json.\<your key here\>
 
-Defines the attribute or structure. All keys are automatically camelized lower
-by default. See [Change Key Format](#change-key-format) to change this behavior.
+Defines the attribute or structure. All keys are not formatted by default. See [Change Key Format](#change-key-format) to change this behavior.
 
 ```ruby
 json.set! :authorDetails, {...options} do
@@ -291,7 +290,7 @@ end
 ### Partials
 
 Partials are supported. The following will render the file
-`views/posts/_blog_posts.json.props`, and set a local variable `foo` assigned
+`views/posts/_blog_posts.json.props`, and set a local variable `post` assigned
 with @post, which you can use inside the partial.
 
 ```ruby
@@ -303,6 +302,7 @@ Usage with arrays:
 
 ```ruby
 # The `as:` option is supported when using `array!`
+# Without `as:` option you can use blog_post variable (name is based on partial's name) inside partial
 
 json.posts do
   json.array! @posts, partial: ["posts/blog_post", locals: {foo: 'bar'}, as: 'post'] do
@@ -589,9 +589,36 @@ By default, keys are not formatted. If you want to change this behavior,
 override it in an initializer:
 
 ```ruby
+# default behavior
 Props::BaseWithExtensions.class_eval do
+  # json.firstValue "first"
+  # json.second_value "second"
+  #
+  # -> { "firstValue" => "first", "second_value" => "second" }
   def key_format(key)
     key.to_s
+  end
+end
+
+# camelCased behavior
+Props::BaseWithExtensions.class_eval do
+  # json.firstValue "first"
+  # json.second_value "second"
+  #
+  # -> { "firstValue" => "first", "secondValue" => "second" }
+  def key_format(key)
+    key.to_s.camelize(:lower)
+  end
+end
+
+# snake_cased behavior
+Props::BaseWithExtensions.class_eval do
+  # json.firstValue "first"
+  # json.second_value "second"
+  #
+  # -> { "first_value" => "first", "second_value" => "second" }
+  def key_format(key)
+    key.to_s.underscore
   end
 end
 ```
