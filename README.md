@@ -156,6 +156,28 @@ The difference between the block form and inline form is
   2. The inline form is considered a leaf node, and you can only [search](#traversing)
   for internal nodes.
 
+### json.extract!
+Extracts attributes from object or hash in 1 line
+
+```ruby
+# without extract!
+json.id user.id
+json.email user.email
+json.name user.name
+
+# with extract!
+json.extract! user, :id, :email, :name
+
+# => {"id" => 1, "email" => "email@gmail.com", "name" => "user"}
+```
+
+The inline form defines object and attributes
+
+| Parameter | Notes |
+| :--- | :--- |
+| object | An object |
+| attributes | A list of attributes |
+
 ### json.array!
 Generates an array of json objects.
 

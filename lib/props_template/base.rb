@@ -105,6 +105,19 @@ module Props
       nil
     end
 
+    # json.id item.id
+    # json.value item.value
+    #
+    # json.extract! item, :id, :value
+    def extract!(object, *attributes)
+      attributes.each do |attribute|
+        set!(
+          attribute,
+          object.is_a?(Hash) ? object.fetch(attribute) : object.public_send(attribute)
+        )
+      end
+    end
+
     def result!
       if @scope.nil?
         @stream.push_object
