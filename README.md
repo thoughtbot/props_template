@@ -585,8 +585,10 @@ json.flash flash.to_h
 will render Layout first, then the template when `yield json` is used.
 
 ## Change key format
-By default, keys are not formatted. If you want to change this behavior,
-override it in an initializer:
+By default, keys are not formatted. This is intentional. By being explicity with your keys,
+it makes your views quicker and more easily searchable when working in Javascript land.
+
+If you must change this behavior, override it in an initializer and cache the value:
 
 ```ruby
 # default behavior
@@ -607,7 +609,15 @@ Props::BaseWithExtensions.class_eval do
   #
   # -> { "firstValue" => "first", "secondValue" => "second" }
   def key_format(key)
-    key.to_s.camelize(:lower)
+    @key_cache ||= {}
+    @key_cache[key] ||= key.to_s.camelize(:lower)
+    @key_cache[key]
+  end
+
+  def result!
+    result = super
+    @key_cache = {}
+    result
   end
 end
 
@@ -618,7 +628,15 @@ Props::BaseWithExtensions.class_eval do
   #
   # -> { "first_value" => "first", "second_value" => "second" }
   def key_format(key)
-    key.to_s.underscore
+    @key_cache ||= {}
+    @key_cache[key] ||= key.to_s.underscore
+    @key_cache[key]
+  end
+
+  def result!
+    result = super
+    @key_cache = {}
+    result
   end
 end
 ```
