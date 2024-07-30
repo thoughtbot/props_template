@@ -105,6 +105,10 @@ module Props
       nil
     end
 
+    def partial!(**options)
+      @context.render options
+    end
+
     def result!
       if @scope.nil?
         @stream.push_object
