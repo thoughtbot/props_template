@@ -163,12 +163,17 @@ Extracts attributes from object or hash in 1 line
 # without extract!
 json.id user.id
 json.email user.email
-json.name user.name
+json.firstName user.first_name
 
 # with extract!
-json.extract! user, :id, :email, :name
+json.extract! user, :id, :email, :first_name
 
-# => {"id" => 1, "email" => "email@gmail.com", "name" => "user"}
+# => {"id" => 1, "email" => "email@gmail.com", "first_name" => "user"}
+
+# with extract! with key transformation
+json.extract! user, :id, [:first_name, :firstName], [:last_name, :lastName]
+
+# => {"id" => 1, "firstName" => "user", "lastName" => "last"}
 ```
 
 The inline form defines object and attributes
