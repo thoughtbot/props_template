@@ -93,8 +93,7 @@ You can also add a [layout](#layouts).
 
 ### json.set! or json.\<your key here\>
 
-Defines the attribute or structure. All keys are automatically camelized lower
-by default. See [Change Key Format](#change-key-format) to change this behavior.
+Defines the attribute or structure. All keys are not formatted by default. See [Change Key Format](#change-key-format) to change this behavior.
 
 ```ruby
 json.set! :authorDetails, {...options} do
@@ -155,6 +154,33 @@ The difference between the block form and inline form is
   block form.
   2. The inline form is considered a leaf node, and you can only [search](#traversing)
   for internal nodes.
+
+### json.extract!
+Extracts attributes from object or hash in 1 line
+
+```ruby
+# without extract!
+json.id user.id
+json.email user.email
+json.firstName user.first_name
+
+# with extract!
+json.extract! user, :id, :email, :first_name
+
+# => {"id" => 1, "email" => "email@gmail.com", "first_name" => "user"}
+
+# with extract! with key transformation
+json.extract! user, :id, [:first_name, :firstName], [:last_name, :lastName]
+
+# => {"id" => 1, "firstName" => "user", "lastName" => "last"}
+```
+
+The inline form defines object and attributes
+
+| Parameter | Notes |
+| :--- | :--- |
+| object | An object |
+| attributes | A list of attributes |
 
 ### json.array!
 Generates an array of json objects.
@@ -291,7 +317,7 @@ end
 ### Partials
 
 Partials are supported. The following will render the file
-`views/posts/_blog_posts.json.props`, and set a local variable `foo` assigned
+`views/posts/_blog_posts.json.props`, and set a local variable `post` assigned
 with @post, which you can use inside the partial.
 
 ```ruby
@@ -303,6 +329,7 @@ Usage with arrays:
 
 ```ruby
 # The `as:` option is supported when using `array!`
+# Without `as:` option you can use blog_post variable (name is based on partial's name) inside partial
 
 json.posts do
   json.array! @posts, partial: ["posts/blog_post", locals: {foo: 'bar'}, as: 'post'] do
@@ -592,13 +619,58 @@ json.flash flash.to_h
 will render Layout first, then the template when `yield json` is used.
 
 ## Change key format
-By default, keys are not formatted. If you want to change this behavior,
-override it in an initializer:
+By default, keys are not formatted. This is intentional. By being explicity with your keys,
+it makes your views quicker and more easily searchable when working in Javascript land.
+
+If you must change this behavior, override it in an initializer and cache the value:
 
 ```ruby
+# default behavior
 Props::BaseWithExtensions.class_eval do
+  # json.firstValue "first"
+  # json.second_value "second"
+  #
+  # -> { "firstValue" => "first", "second_value" => "second" }
   def key_format(key)
     key.to_s
+  end
+end
+
+# camelCased behavior
+Props::BaseWithExtensions.class_eval do
+  # json.firstValue "first"
+  # json.second_value "second"
+  #
+  # -> { "firstValue" => "first", "secondValue" => "second" }
+  def key_format(key)
+    @key_cache ||= {}
+    @key_cache[key] ||= key.to_s.camelize(:lower)
+    @key_cache[key]
+  end
+
+  def result!
+    result = super
+    @key_cache = {}
+    result
+  end
+end
+
+# snake_cased behavior
+Props::BaseWithExtensions.class_eval do
+  # json.firstValue "first"
+  # json.second_value "second"
+  #
+  # -> { "first_value" => "first", "second_value" => "second" }
+  def key_format(key)
+    @key_cache ||= {}
+    @key_cache[key] ||= key.to_s.underscore
+    @key_cache[key]
+  end
+
+  def result!
+    result = super
+    @key_cache = {}
+    result
   end
 end
 ```

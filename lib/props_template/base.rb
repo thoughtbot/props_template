@@ -109,6 +109,28 @@ module Props
       @context.render options
     end
 
+    # json.id item.id
+    # json.value item.value
+    #
+    # json.extract! item, :id, :value
+    #
+    # with key transformation
+    # json.extract! item, :id, [:first_name, :firstName]
+    def extract!(object, *values)
+      values.each do |value|
+        key, attribute = if value.is_a?(Array)
+          [value[1], value[0]]
+        else
+          [value, value]
+        end
+
+        set!(
+          key,
+          object.is_a?(Hash) ? object.fetch(attribute) : object.public_send(attribute)
+        )
+      end
+    end
+
     def result!
       if @scope.nil?
         @stream.push_object

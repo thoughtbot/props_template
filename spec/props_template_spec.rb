@@ -356,4 +356,53 @@ RSpec.describe "Props::Base" do
       ])
     end
   end
+
+  context "extract!" do
+    it "extracts values for hash" do
+      object = { :foo => "bar", "bar" => "foo", :wiz => "wiz" }
+
+      json = Props::Base.new
+      json.extract! object, :foo, "bar"
+      attrs = json.result!.strip
+
+      expect(attrs).to eql_json({
+        foo: "bar",
+        bar: "foo"
+      })
+    end
+
+    it "extracts values for hash with key transformation" do
+      object = { :foo => "bar", "bar_bar" => "foo", :wiz => "wiz" }
+
+      json = Props::Base.new
+      json.extract! object, :foo, ["bar_bar", "barBar"]
+      attrs = json.result!.strip
+
+      expect(attrs).to eql_json({
+        foo: "bar",
+        barBar: "foo"
+      })
+    end
+
+    it "extracts values for object" do
+      class FooBar
+        def foo
+          "bar"
+        end
+
+        def bar
+          "foo"
+        end
+      end
+
+      json = Props::Base.new
+      json.extract! FooBar.new, :foo, "bar"
+      attrs = json.result!.strip
+
+      expect(attrs).to eql_json({
+        foo: "bar",
+        bar: "foo"
+      })
+    end
+  end
 end

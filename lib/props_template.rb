@@ -23,6 +23,7 @@ module Props
 
     delegate :result!, :array!,
       :partial!,
+      :extract!,
       :deferred!,
       :fragments!,
       :set_block_content!,
