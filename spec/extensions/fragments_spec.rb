@@ -30,6 +30,26 @@ RSpec.describe "Props::Template fragments" do
     })
   end
 
+  it "renders the full path with digging" do
+    json = render(<<~PROPS)
+      json.outer(search: ["outer", "inner"]) do
+        json.inner(partial: ['simple', fragment: :simple]) do
+        end
+      end
+
+      json.fragments json.fragments!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        foo: "bar"
+      },
+      fragments: [
+        {type: :simple, partial: "simple", path: "outer.inner"},
+      ]
+    })
+  end
+
   it "renders with a partial and populates fragments even when caching" do
     render(<<~PROPS)
       json.outer do
