@@ -22,6 +22,7 @@ module Props
     self.template_lookup_options = {handlers: [:props]}
 
     delegate :result!, :array!,
+      :partial!,
       :extract!,
       :deferred!,
       :fragments!,

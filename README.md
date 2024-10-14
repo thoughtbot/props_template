@@ -337,6 +337,13 @@ json.posts do
 end
 ```
 
+Usage for rendering partial without assigning it to some key:
+
+```ruby
+json.partial! partial: "posts/blog_post", locals: {post: @post} do
+end
+```
+
 ### Partial Fragments
 **Note** This is a [SuperglueJS][1] specific functionality.
 

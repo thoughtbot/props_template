@@ -297,6 +297,66 @@ RSpec.describe "Props::Base" do
     end
   end
 
+  context "partial!" do
+    it "renders with a partial" do
+      json = render(<<~PROPS)
+        json.partial! partial: 'simple'
+      PROPS
+
+      expect(json).to eql_json({
+        foo: "bar"
+      })
+    end
+
+    it "renders with locale" do
+      json = render(<<~PROPS)
+        json.partial! partial: 'simple', locale: :de
+      PROPS
+
+      expect(json).to eql_json({
+        foo: "Kein"
+      })
+    end
+
+    it "renders with variants" do
+      json = render(<<~PROPS)
+        json.partial! partial: 'simple', variants: :grid
+      PROPS
+
+      expect(json).to eql_json({
+        foo: "Grid"
+      })
+    end
+
+    it "renders with a partial with locals" do
+      json = render(<<~PROPS)
+        json.partial! partial: 'profile', locals: {email: 'joe@joe.com'}
+      PROPS
+
+      expect(json).to eql_json({
+        email: "joe@joe.com"
+      })
+    end
+
+    it "renders an array of partials" do
+      json = render(<<~PROPS)
+        emails = [
+          'joe@j.com',
+          'foo@f.com',
+        ]
+
+        json.array! emails do |email|
+          json.partial! partial: 'profile', locals: {email: email}
+        end
+      PROPS
+
+      expect(json).to eql_json([
+        {email: "joe@j.com"},
+        {email: "foo@f.com"}
+      ])
+    end
+  end
+
   context "extract!" do
     it "extracts values for hash" do
       object = { :foo => "bar", "bar" => "foo", :wiz => "wiz" }

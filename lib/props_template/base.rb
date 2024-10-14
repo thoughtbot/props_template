@@ -105,6 +105,10 @@ module Props
       nil
     end
 
+    def partial!(**options)
+      @context.render options
+    end
+
     # json.id item.id
     # json.value item.value
     #
