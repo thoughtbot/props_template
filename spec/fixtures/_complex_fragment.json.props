@@ -1,0 +1,3 @@
+json.body(defer: :auto) do
+  json.hello "world"
+end

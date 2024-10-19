@@ -30,6 +30,22 @@ RSpec.describe "Props::Template fragments" do
     })
   end
 
+  it "skips populating fragments when defer is active" do
+    json = render(<<~PROPS)
+      json.outer(defer: :auto) do
+        json.inner(partial: ['simple', fragment: :simple]) do
+        end
+      end
+
+      json.fragments json.fragments!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {},
+      fragments: []
+    })
+  end
+
   it "renders the full path with digging" do
     json = render(<<~PROPS)
       json.outer(search: ["outer", "inner"]) do
@@ -45,8 +61,52 @@ RSpec.describe "Props::Template fragments" do
         foo: "bar"
       },
       fragments: [
-        {type: :simple, partial: "simple", path: "outer.inner"},
+        {type: :simple, partial: "simple", path: "outer.inner"}
       ]
+    })
+  end
+
+  it "renders with a fragment but with a defer" do
+    json = render(<<~PROPS)
+      json.outer do
+        json.inner(partial: ['complex_fragment', fragment: :complex]) do
+        end
+      end
+
+      json.fragments json.fragments!
+      json.defers json.deferred!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        inner: {
+          body: {}
+        }
+      },
+      fragments: [
+        {type: :complex, partial: "complex_fragment", path: "outer.inner"}
+      ],
+      defers: [
+        {url: "?props_at=outer.inner.body", path: "outer.inner.body", type: "auto"}
+      ]
+    })
+
+    json = render(<<~PROPS)
+      json.outer(search: ["outer", "inner", "body"]) do
+        json.inner(partial: ['complex_fragment', fragment: :complex]) do
+        end
+      end
+
+      json.fragments json.fragments!
+      json.defers json.deferred!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        hello: "world"
+      },
+      fragments: [],
+      defers: []
     })
   end
 
