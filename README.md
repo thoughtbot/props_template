@@ -337,10 +337,32 @@ json.posts do
 end
 ```
 
-Usage for rendering partial without assigning it to some key:
+Rendering partials without a key is also supported using `json.partial!`, but use
+sparingly! `json.partial!` is not optimized for collection rendering and may
+cause performance problems. Its best used for things like a shared header or footer.
+
+Do:
 
 ```ruby
-json.partial! partial: "posts/blog_post", locals: {post: @post} do
+json.partial! partial: "header", locals: {user: @user} do
+end
+```
+
+or
+
+```ruby
+json.posts do
+  json.array! @posts, partial: ["posts/blog_post", locals: {post: @post}] do
+  end
+end
+```
+
+Do NOT:
+
+```
+@post.each do |post|
+  json.partial! partial: "post", locals: {post: @post} do
+  end
 end
 ```
 
