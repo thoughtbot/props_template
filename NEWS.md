@@ -1,5 +1,9 @@
 # News
 
+## 0.36.0 (Nov 21, 2024)
+
+New features `extract!`, `partial!`, and test improvments.
+
 ## 0.35.0 (Jul 20, 2024)
 
 Fix issue with locals referring to an earlier item when using it in collections.
