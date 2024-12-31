@@ -72,7 +72,7 @@ gem 'props_template'
 and run `bundle`.
 
 Optionally add the [core ext](#array-core-extension) to an initializer if you
-want to [dig](#traversing) into your templates.
+want to [dig](#digging) into your templates.
 
 ```ruby
 require 'props_template/core_ext'
@@ -152,7 +152,7 @@ The difference between the block form and inline form is
   1. The block form is an internal node. Functionality such as Partials,
   Deferment and other [options](#options) are only available on the
   block form.
-  2. The inline form is considered a leaf node, and you can only [search](#traversing)
+  2. The inline form is considered a leaf node, and you can only [dig](#digging)
   for internal nodes.
 
 ### json.extract!
@@ -202,7 +202,7 @@ end
 | collection | A collection that responds to `member_at` and `member_by` |
 | options | Additional [options](#options)|
 
-To support [traversing nodes](#traversing), any list passed
+To support [digging](#digging), any list passed
 to `array!` MUST implement `member_at(index)` and `member_by(attr, value)`.
 
 For example, if you were using a delegate:
@@ -276,7 +276,7 @@ end
 ```
 
 PropsTemplate does not know what the elements are in your collection. The
-example above will be fine for [traversing](#traversing)
+example above will be fine for [digging](#digging)
 by index, but will raise a `NotImplementedError` if you query by attribute. You
 may still need to implement `member_by`.
 
@@ -447,7 +447,7 @@ entirely and replace the value with a placeholder. A common use case would be
 tabbed content that does not load until you click the tab.
 
 When your client receives the payload, you may issue a second request to the
-same endpoint to fetch any missing nodes. See [traversing nodes](#traversing)
+same endpoint to fetch any missing nodes. See [digging](#digging)
 
 There is also an `defer: :auto` option that you can use with [SuperglueJS][1]. [SuperglueJS][1]
 will use the metadata from `json.deferred!` to issue a `remote` dispatch to fetch
@@ -502,7 +502,7 @@ your collection item, and is used for `defer: :auto` to generate a keypath for
 [SuperglueJS][1]. If you are NOT using SuperglueJS, you do not need to do this.
 
 2. Implement `member_at`, on the [collection](#jsonarray). This will be called
-by PropsTemplate to when [searching nodes](#traversing)
+by PropsTemplate to when [digging](#digging)
 
 For example:
 
@@ -528,7 +528,7 @@ end
 If you are using [SuperglueJS][1], SuperglueJS will, it will automatically kick off
 `remote(?props_at=posts.some_id=1.contact)` and `remote(?props_at=posts.some_id=2.contact)`.
 
-## Traversing
+## Digging
 
 PropsTemplate has the ability to walk the tree you build, skipping execution of
 untargeted nodes. This feature is useful for selectively updating your frontend
@@ -537,7 +537,7 @@ state.
 ```ruby
 traversal_path = ['data', 'details', 'personal']
 
-json.data(search: traversal_path) do
+json.data(dig: traversal_path) do
   json.details do
     json.employment do
       ...more stuff
@@ -571,13 +571,13 @@ The above will output:
 }
 ```
 
-Searching only works with blocks, and will NOT work with Scalars
+Digging only works with blocks, and will NOT work with Scalars
 ("leaf" values). For example:
 
 ```ruby
 traversal_path = ['data', 'details', 'personal', 'name'] <- not found
 
-json.data(search: traversal_path) do
+json.data(dig: traversal_path) do
   json.details do
     json.personal do
       json.name 'james'
@@ -588,12 +588,12 @@ end
 
 ## Nodes that do not exist
 
-Nodes that are not found will remove the branch where search was enabled on.
+Nodes that are not found will remove the branch where digging was enabled on.
 
 ```ruby
 traversal_path = ['data', 'details', 'does_not_exist']
 
-json.data(search: traversal_path) do
+json.data(dig: traversal_path) do
   json.details do
     json.personal do
       json.name 'james'
@@ -642,7 +642,7 @@ will render Layout first, then the template when `yield json` is used.
 
 ## Change key format
 By default, keys are not formatted. This is intentional. By being explicity with your keys,
-it makes your views quicker and more easily searchable when working in Javascript land.
+it makes your views quicker and more easily diggable when working in Javascript land.
 
 If you must change this behavior, override it in an initializer and cache the value:
 

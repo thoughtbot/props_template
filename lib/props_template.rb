@@ -36,11 +36,15 @@ module Props
     end
 
     def set!(key, options = {}, &block)
-      if block && options[:search] && !@builder.is_a?(Searcher)
+      if block && (options[:search] || options[:dig]) && !@builder.is_a?(Searcher)
+        search = options[:search] || options[:dig]
 
         prev_builder = @builder
-        @builder = Searcher.new(self, options[:search], @context)
+        @builder = Searcher.new(self, search, @context)
+
         options.delete(:search)
+        options.delete(:dig)
+
         @builder.set!(key, options, &block)
         found_block, found_options = @builder.found!
         @builder = prev_builder

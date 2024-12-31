@@ -8,6 +8,26 @@ RSpec.describe("searching the template") do
 
   it "finds the correct node and merges it to the top" do
     json = render(<<~PROPS)
+      json.data(dig: ['data', 'comment', 'details']) do
+        json.comment do
+          json.details do
+            json.name 'john'
+          end
+        end
+      end
+      json.foo 'bar'
+    PROPS
+
+    expect(json).to eql_json({
+      data: {
+        name: "john"
+      },
+      foo: "bar"
+    })
+  end
+  
+  it "aliases dig to search and finds the correct node and merges it to the top" do
+    json = render(<<~PROPS)
       json.data(search: ['data', 'comment', 'details']) do
         json.comment do
           json.details do
@@ -28,7 +48,7 @@ RSpec.describe("searching the template") do
 
   it "finds an empty child node and returns an empty object" do
     json = render(<<~PROPS)
-      json.data(search: ['data', 'inner']) do
+      json.data(dig: ['data', 'inner']) do
         json.inner do
         end
       end
@@ -43,7 +63,7 @@ RSpec.describe("searching the template") do
 
   it "searching for a non-existant child does not set the parent, simulating undefined in JS" do
     json = render(<<~PROPS)
-      json.data(search: ['data', 'does_not_exist']) do
+      json.data(dig: ['data', 'does_not_exist']) do
         json.inner do
         end
       end
@@ -57,7 +77,7 @@ RSpec.describe("searching the template") do
 
   it "searching for nil does nothing" do
     json = render(<<~PROPS)
-      json.data(search: nil) do
+      json.data(dig: nil) do
         json.inner do
         end
       end
@@ -74,7 +94,7 @@ RSpec.describe("searching the template") do
 
   it "searching for an empty array means we found nothing" do
     json = render(<<~PROPS)
-      json.data(search: []) do
+      json.data(dig: []) do
         json.inner do
         end
       end
@@ -88,7 +108,7 @@ RSpec.describe("searching the template") do
 
   it "searching for a child node with siblings in back" do
     json = render(<<~PROPS)
-      json.outer(search: ['outer', 'inner']) do
+      json.outer(dig: ['outer', 'inner']) do
         json.inner do
           json.foo 32
         end
@@ -109,7 +129,7 @@ RSpec.describe("searching the template") do
 
   it "searching for a child node with siblings in front" do
     json = render(<<-PROPS)
-      json.outer(search: ['outer', 'inner']) do
+      json.outer(dig: ['outer', 'inner']) do
         json.bad do
           raise 'this should not happen'
           json.foo 'should not touch'
@@ -130,13 +150,13 @@ RSpec.describe("searching the template") do
 
   it "searches on multiple siblings" do
     json = render(<<-PROPS)
-      json.outer(search: ['outer', 'inner']) do
+      json.outer(dig: ['outer', 'inner']) do
         json.inner do
           json.foo 32
         end
       end
 
-      json.first(search: ['first', 'second']) do
+      json.first(dig: ['first', 'second']) do
         json.second do
           json.bar 'cool'
         end
@@ -155,8 +175,8 @@ RSpec.describe("searching the template") do
 
   it "reenables search functionality at the contents of found obj nodes" do
     json = render(<<-PROPS)
-      json.outer(search: ['outer']) do
-        json.inner(search: ['inner', 'foo']) do
+      json.outer(dig: ['outer']) do
+        json.inner(dig: ['inner', 'foo']) do
           json.foo do
             json.firstName 'john'
           end
@@ -175,8 +195,8 @@ RSpec.describe("searching the template") do
 
   it "ignores search functionality in between levels of traversal" do
     json = render(<<-PROPS)
-      json.outer(search: ['outer', 'inner', 'foo']) do
-        json.inner(search: ['does_not_exist']) do
+      json.outer(dig: ['outer', 'inner', 'foo']) do
+        json.inner(dig: ['does_not_exist']) do
           json.foo do
             json.firstName 'john'
           end
@@ -193,7 +213,7 @@ RSpec.describe("searching the template") do
 
   it "find the correct node in a partial" do
     json = render(<<~PROPS)
-      json.data(search: ['data', 'comment', 'details']) do
+      json.data(dig: ['data', 'comment', 'details']) do
         json.comment(partial: 'comment') do
         end
       end
@@ -208,7 +228,7 @@ RSpec.describe("searching the template") do
 
   it "finds a subtree" do
     json = render(<<-PROPS)
-      json.outer(search: ['outer','inner', 'deep']) do
+      json.outer(dig: ['outer','inner', 'deep']) do
         json.inner do
           json.deep do
             json.deeper do
@@ -230,7 +250,7 @@ RSpec.describe("searching the template") do
 
   it "searching for a leaf node is unsupported" do
     json = render(<<-PROPS)
-      json.outer(search: ['outer', 'inner', 'foo']) do
+      json.outer(dig: ['outer', 'inner', 'foo']) do
         json.inner do
           json.foo 32
         end
@@ -245,7 +265,7 @@ RSpec.describe("searching the template") do
 
   it "searching for a node beyond whats available is equivalent to not finding anything" do
     json = render(<<-PROPS)
-      json.outer(search: ['inner', 'a', 'b']) do
+      json.outer(dig: ['inner', 'a', 'b']) do
         json.inner do
           json.foo 32
         end
@@ -260,7 +280,7 @@ RSpec.describe("searching the template") do
 
   it "finds an array" do
     json = render(<<-PROPS)
-      json.outer(search: ['outer', 'inner']) do
+      json.outer(dig: ['outer', 'inner']) do
         json.inner do
           json.array! [1, 2] do |item|
             json.foo item
@@ -279,7 +299,7 @@ RSpec.describe("searching the template") do
 
   it "searching for an item inside an array" do
     json = render(<<-PROPS)
-      json.outer(search: ['outer', 0]) do
+      json.outer(dig: ['outer', 0]) do
         json.array! ['hello', 'world'] do |item|
           json.foo item
         end
@@ -295,7 +315,7 @@ RSpec.describe("searching the template") do
 
   it "searching for an node beyond an array" do
     json = render(<<-PROPS)
-      json.outer(search: ['outer', 'inner', 1, 'foo']) do
+      json.outer(dig: ['outer', 'inner', 1, 'foo']) do
         json.inner do
           json.array! [1, 2] do |item|
             json.foo do
@@ -315,7 +335,7 @@ RSpec.describe("searching the template") do
 
   it "searching for an node outside the length of the array, is equivalent to not finding anything" do
     json = render(<<-PROPS)
-      json.outer(search: ['inner', 10, 'foo']) do
+      json.outer(dig: ['inner', 10, 'foo']) do
         json.inner do
           json.array! [1, 2] do |item|
             json.foo do
@@ -334,7 +354,7 @@ RSpec.describe("searching the template") do
 
   it "searching for an node outside the length of the array, is equivalent to not finding anything" do
     json = render(<<-PROPS)
-      json.outer(search: ['outer', 'inner', 10, 'foo']) do
+      json.outer(dig: ['outer', 'inner', 10, 'foo']) do
         json.inner do
           json.array! [1, 2] do |item|
             json.foo do
@@ -353,7 +373,7 @@ RSpec.describe("searching the template") do
 
   it "searching for nested array" do
     json = render(<<-PROPS)
-      json.outer(search: ['outer', 'inner', 1, 'foo']) do
+      json.outer(dig: ['outer', 'inner', 1, 'foo']) do
         json.inner do
           json.array! [0, 1] do |item|
             json.foo do
@@ -376,7 +396,7 @@ RSpec.describe("searching the template") do
 
   it "searching for object inside a nested array" do
     json = render(<<-PROPS)
-      json.outer(search: ['outer','inner', 1, 'foo', 0]) do
+      json.outer(dig: ['outer','inner', 1, 'foo', 0]) do
         json.inner do
           json.array! [0, 1] do |item|
             json.foo do
@@ -397,7 +417,7 @@ RSpec.describe("searching the template") do
   context "when searching through a partial" do
     it "returns the correct node in an object" do
       json = render(<<~PROPS)
-        json.data(search: ['data', 'comment', 'details']) do
+        json.data(dig: ['data', 'comment', 'details']) do
           json.comment(partial: 'comment') do
           end
         end
@@ -412,7 +432,7 @@ RSpec.describe("searching the template") do
 
     it "ignores the fragment option" do
       json = render(<<~PROPS)
-        json.data(search: ['data', 'comment', 'details']) do
+        json.data(dig: ['data', 'comment', 'details']) do
           json.comment(partial: ['comment', fragment: 'foobar']) do
           end
         end
@@ -429,7 +449,7 @@ RSpec.describe("searching the template") do
 
     it "passes the found child obj options back to the parent" do
       json = render(<<~PROPS)
-        json.data(search: ['data', 'comment']) do
+        json.data(dig: ['data', 'comment']) do
           json.comment(partial: 'comment') do
           end
         end
@@ -447,7 +467,7 @@ RSpec.describe("searching the template") do
 
     it "passes the found child obj in array options back to the parent" do
       json = render(<<~PROPS)
-        json.data(search: ['data', 'comment', 1]) do
+        json.data(dig: ['data', 'comment', 1]) do
           json.comment do
             json.array! ['hello', 'world'], {partial: ['profile', as: :email]} do
             end
@@ -464,7 +484,7 @@ RSpec.describe("searching the template") do
 
     it "returns the correct node in an array" do
       json = render(<<~PROPS)
-        json.data(search: ['data', 'comment', 0]) do
+        json.data(dig: ['data', 'comment', 0]) do
           json.comment do
             json.array! [0], {partial: 'simple'} do
             end
@@ -481,7 +501,7 @@ RSpec.describe("searching the template") do
 
     it "returns the correct node beyond an array" do
       json = render(<<~PROPS)
-        json.data(search: ['data','comment', 0, 'details']) do
+        json.data(dig: ['data','comment', 0, 'details']) do
           json.comment do
             json.array! [0], {partial: 'comment'} do
             end
@@ -498,7 +518,7 @@ RSpec.describe("searching the template") do
 
     it "returns the correct node across nested partials" do
       json = render(<<~PROPS)
-        json.data(search: ['data', 'comment', 'details', 'contact', 'phone']) do
+        json.data(dig: ['data', 'comment', 'details', 'contact', 'phone']) do
           json.comment(partial: 'complex') do
           end
         end
@@ -514,7 +534,7 @@ RSpec.describe("searching the template") do
 
     it "returns the correct node across nested partials" do
       json = render(<<~PROPS)
-        json.data(search: ['data', 'comments', 0, 0, 'details', 'contact', 'phone']) do
+        json.data(dig: ['data', 'comments', 0, 0, 'details', 'contact', 'phone']) do
           opts = {
             partial: ['complex_children', locals: {children: [1,2]}]
           }
