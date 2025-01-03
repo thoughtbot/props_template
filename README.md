@@ -100,7 +100,7 @@ json.set! :authorDetails, {...options} do
   json.set! :firstName, 'David'
 end
 
-or
+# or
 
 json.authorDetails, {...options} do
   json.firstName 'David'
@@ -121,7 +121,7 @@ The inline form defines key and value
 
 json.set! :firstName, 'David'
 
-or
+# or
 
 json.firstName 'David'
 
@@ -138,13 +138,13 @@ The block form defines key and structure
 
 ```ruby
 json.set! :details do
-  ...
+  # ...
 end
 
 or
 
 json.details do
-  ...
+  # ...
 end
 ```
 
@@ -199,7 +199,7 @@ end
 
 | Parameter | Notes |
 | :--- | :--- |
-| collection | A collection that responds to `member_at` and `member_by` |
+| collection | A collection that optionally responds to `member_at` and `member_by` |
 | options | Additional [options](#options)|
 
 To support [digging](#digging), any list passed
@@ -230,7 +230,7 @@ data = ObjectCollection.new([
 ])
 
 json.array! data do
-  ...
+  # ...
 end
 ```
 
@@ -252,7 +252,7 @@ Then in your template:
 
 ```ruby
 json.array! Post.all do
-  ...
+  # ...
 end
 ```
 
@@ -270,7 +270,7 @@ data = [
 
 json.posts
   json.array! data do
-    ...
+    # ...
   end
 end
 ```
@@ -306,7 +306,7 @@ option.
 `application.json.props` when first running `rails superglue:install:web`
 
 ## Options
-Options Functionality such as Partials, Deferements, and Caching can only be
+Options Functionality such as Partials, Deferments, and Caching can only be
 set on a block. It is normal to see empty blocks.
 
 ```ruby
@@ -339,7 +339,7 @@ end
 
 Rendering partials without a key is also supported using `json.partial!`, but use
 sparingly! `json.partial!` is not optimized for collection rendering and may
-cause performance problems. Its best used for things like a shared header or footer.
+cause performance problems. It's best used for things like a shared header or footer.
 
 Do:
 
@@ -359,7 +359,7 @@ end
 
 Do NOT:
 
-```
+```ruby
 @post.each do |post|
   json.partial! partial: "post", locals: {post: @post} do
   end
@@ -406,12 +406,12 @@ json.author(cache: "some_cache_key") do
   json.firstName "tommy"
 end
 
-#or
+# or
 
 json.profile(cache: "cachekey", partial: ["profile", locals: {foo: 1}]) do
 end
 
-#or nest it
+# or nest it
 
 json.author(cache: "some_cache_key") do
   json.address(cache: "some_other_cache_key") do
@@ -431,7 +431,7 @@ json.array! [4,5], opts do |x|
   json.top "hello" + x.to_s
 end
 
-#or on arrays with partials
+# or on arrays with partials
 
 opts = { cache: (->(d){ ['a', d.id] }), partial: ["blog_post", as: :blog_post] }
 
@@ -449,7 +449,7 @@ tabbed content that does not load until you click the tab.
 When your client receives the payload, you may issue a second request to the
 same endpoint to fetch any missing nodes. See [digging](#digging)
 
-There is also an `defer: :auto` option that you can use with [SuperglueJS][1]. [SuperglueJS][1]
+There is also a `defer: :auto` option that you can use with [SuperglueJS][1]. [SuperglueJS][1]
 will use the metadata from `json.deferred!` to issue a `remote` dispatch to fetch
 the missing node and immutably graft it at the appropriate keypath in your Redux
 store.
@@ -489,10 +489,10 @@ json.defers json.deferred!
 ```
 
 #### Working with arrays
-The default behavior for deferements is to use the index of the collection to
+The default behavior for deferments is to use the index of the collection to
 identify an element.
 
-**Note** If you are using this library with [SuperglueJS][1], the `:auto` options will
+**Note** If you are using this library with [SuperglueJS][1], the `:auto` option will
 generate `?props_at=a.b.c.0.title` for `json.deferred!`.
 
 If you wish to use an attribute to identify the element. You must:
@@ -525,7 +525,7 @@ json.posts
 end
 ```
 
-If you are using [SuperglueJS][1], SuperglueJS will, it will automatically kick off
+If you are using [SuperglueJS][1], it will automatically kick off
 `remote(?props_at=posts.some_id=1.contact)` and `remote(?props_at=posts.some_id=2.contact)`.
 
 ## Digging
@@ -540,7 +540,7 @@ traversal_path = ['data', 'details', 'personal']
 json.data(dig: traversal_path) do
   json.details do
     json.employment do
-      ...more stuff
+      # ...more stuff
     end
 
     json.personal do
@@ -551,12 +551,12 @@ json.data(dig: traversal_path) do
 end
 
 json.footer do
-  ...
+  # ...
 end
 ```
 
 PropsTemplate will walk depth first, walking only when it finds a matching key,
-then executes the associated block, and repeats until it the node is found.
+then executes the associated block, and repeats until the node is found.
 The above will output:
 
 ```json
@@ -575,7 +575,7 @@ Digging only works with blocks, and will NOT work with Scalars
 ("leaf" values). For example:
 
 ```ruby
-traversal_path = ['data', 'details', 'personal', 'name'] <- not found
+traversal_path = ['data', 'details', 'personal', 'name'] # <- not found
 
 json.data(dig: traversal_path) do
   json.details do
@@ -602,7 +602,7 @@ json.data(dig: traversal_path) do
 end
 
 json.footer do
-  ...
+  # ...
 end
 ```
 
@@ -641,8 +641,8 @@ json.flash flash.to_h
 will render Layout first, then the template when `yield json` is used.
 
 ## Change key format
-By default, keys are not formatted. This is intentional. By being explicity with your keys,
-it makes your views quicker and more easily diggable when working in Javascript land.
+By default, keys are not formatted. This is intentional. By being explicit with your keys,
+it makes your views quicker and more easily diggable when working in JavaScript land.
 
 If you must change this behavior, override it in an initializer and cache the value:
 
