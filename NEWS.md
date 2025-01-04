@@ -1,8 +1,13 @@
 # News
 
+## 0.37.0 (Dec 31, 2024)
+  * Add a `dig` option for traversing into a template.
+    It's basically an alias of the already existing `search` option.
+  * Drop support for Rails 6.
+
 ## 0.36.0 (Nov 21, 2024)
 
-New features `extract!`, `partial!`, and test improvments.
+New features `extract!`, `partial!`, and test improvements.
 
 ## 0.35.0 (Jul 20, 2024)
 
