@@ -31,6 +31,20 @@ RSpec.describe "Props::Template caching" do
     })
   end
 
+  it "caches an object with newlines" do
+    json = render(<<~PROPS)
+      json.author(cache: 'some_cache_key') do
+        json.firstName "hi \nworld"
+      end
+    PROPS
+
+    expect(json).to eql_json({
+      author: {
+        firstName: "hi \nworld"
+      }
+    })
+  end
+
   it "caches an object with expiry" do
     freeze_time
 
