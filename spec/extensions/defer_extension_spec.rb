@@ -474,7 +474,18 @@ RSpec.describe "Props::Template" do
       json.deferred json.deferred!
     PROPS
 
-    render(props)
+    json = render(props)
+
+    expect(json).to eql_json({
+      outer: {
+        inner: {
+          greeting: {}
+        }
+      },
+      deferred: [
+        {url: "/some_url?props_at=outer.inner.greeting", path: "outer.inner.greeting", type: "auto"}
+      ]
+    })
     json = render(props)
 
     expect(json).to eql_json({

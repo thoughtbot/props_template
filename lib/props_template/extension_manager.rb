@@ -86,12 +86,13 @@ module Props
           result
         end
 
+        meta, raw_json = state.split("\n")
+        next_deferred, next_fragments = Oj.load(meta)
+        deferred.push(*next_deferred)
+        fragments.push(*next_fragments)
+
         if !recently_cached
-          meta, raw_json = state.split("\n")
-          next_deferred, next_fragments = Oj.load(meta)
           base.stream.push_json(raw_json)
-          deferred.push(*next_deferred)
-          fragments.push(*next_fragments)
         end
       else
         yield
