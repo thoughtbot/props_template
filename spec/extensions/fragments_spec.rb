@@ -170,4 +170,40 @@ RSpec.describe "Props::Template fragments" do
       ]
     })
   end
+
+  it "renders an array of partials with fragments using a proc to derive the fragment key" do
+    json = render(<<~PROPS)
+      klass = Struct.new(:email, :id)
+
+      users = [
+        klass.new('joe@red.com', 1),
+        klass.new('foo@red.com', 2)
+      ]
+
+      json.data do
+        opts = {
+          partial: ['person', fragment: -> (item) { item.email } ]
+        }
+        json.array! users, opts do
+        end
+      end
+
+      json.fragments json.fragments!
+    PROPS
+
+    expect(json).to eql_json({
+      data: [
+        {
+          email: "joe@red.com",
+        },
+        {
+          email: "foo@red.com",
+        }
+      ],
+      fragments: [
+        {type: "joe@red.com", partial: "person", path: "data.0"},
+        {type: "foo@red.com", partial: "person", path: "data.1"}
+      ]
+    })
+  end
 end

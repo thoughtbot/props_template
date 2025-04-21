@@ -152,6 +152,10 @@ module Props
         locals[as] = item
 
         if (fragment_name = rest[:fragment])
+          if item && ::Proc === fragment_name
+            fragment_name = fragment_name.call(item)
+          end
+
           rest[:fragment] = fragment_name.to_s
         end
       end
@@ -163,3 +167,4 @@ module Props
     end
   end
 end
+
