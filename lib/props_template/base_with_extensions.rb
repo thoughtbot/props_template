@@ -10,6 +10,10 @@ module Props
       super()
     end
 
+    def disable_deferments!
+      @em.disable_deferments
+    end
+
     def deferred!
       @em.deferred
     end

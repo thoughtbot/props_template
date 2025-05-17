@@ -8,6 +8,7 @@ module Props
         ActionView::Template.register_template_handler :props, Props::Handler
         require "props_template/dependency_tracker"
         require "props_template/layout_patch"
+        require "props_template/partial_patch"
       end
     end
 

@@ -65,6 +65,54 @@ RSpec.describe "Props::Template fragments" do
     })
   end
 
+  it "renders deferment and populates fragments" do
+    json = render(<<~PROPS)
+      json.outer do
+        json.inner(partial: ['simple', fragment: :simple], defer: :auto) do
+        end
+      end
+
+      json.fragments json.fragments!
+      json.deferred json.deferred!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        inner: {}
+      },
+      fragments: [
+        {type: "simple", partial: "simple", path: "outer.inner"}
+      ],
+      deferred: [
+        {url: "?props_at=outer.inner", path: "outer.inner", type: "auto"},
+      ]
+    })
+  end
+
+  it "renders deferment and populates fragments" do
+    json = render(<<~PROPS)
+      json.outer(dig: ["outer", "inner"]) do
+        json.inner(partial: ['simple', fragment: :simple], defer: :auto) do
+        end
+      end
+
+      json.fragments json.fragments!
+      json.deferred json.deferred!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        inner: {}
+      },
+      fragments: [
+        {type: "simple", partial: "simple", path: "outer.inner"}
+      ],
+      deferred: [
+        {url: "?props_at=outer.inner", path: "outer.inner", type: "auto"},
+      ]
+    })
+  end
+
   it "renders an array of partials with fragments" do
     json = render(<<~PROPS)
       users = [

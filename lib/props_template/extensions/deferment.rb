@@ -1,10 +1,15 @@
 module Props
   class Deferment
-    attr_reader :deferred
+    attr_reader :deferred, :disabled
 
     def initialize(base, deferred = [])
       @deferred = deferred
       @base = base
+      @disabled = false
+    end
+
+    def disable!
+      @disabled = true
     end
 
     def refine_options(options, item = nil)
