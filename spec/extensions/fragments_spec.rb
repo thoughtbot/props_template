@@ -30,6 +30,55 @@ RSpec.describe "Props::Template fragments" do
     })
   end
 
+  it "renders with a partial and populates fragments with exclusive option" do
+    json = render(<<~PROPS)
+      json.outer do
+        json.inner(partial: ['simple'], fragment: :simple) do
+        end
+
+        json.inner2(partial: ['simple'], fragment: :simple) do
+        end
+      end
+      json.fragments json.fragments!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        inner: {
+          foo: "bar"
+        },
+        inner2: {
+          foo: "bar"
+        }
+      },
+      fragments: [
+        {type: :simple, path: "outer.inner"},
+        {type: :simple, path: "outer.inner2"}
+      ]
+    })
+  end
+
+    it "renders with a partial and populates fragments with exclusive option with actions" do
+    json = render(<<~PROPS)
+      json.outer do
+        json.inner(partial: ['simple'], fragment: [:simple, after_save: :push, options: {unique: true}]) do
+        end
+      end
+      json.fragments json.fragments!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        inner: {
+          foo: "bar"
+        },
+      },
+      fragments: [
+        {type: :simple, path: "outer.inner", afterSave: "push", options: {unique: true}},
+      ]
+    })
+  end
+
   it "renders with a partial and populates fragments even when caching" do
     render(<<~PROPS)
       json.outer do
