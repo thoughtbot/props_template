@@ -8,18 +8,31 @@ module Props
     end
 
     def handle(options)
-      return if !options[:partial]
-      partial_name, partial_opts = options[:partial]
-      fragment = partial_opts[:fragment]
+      if options[:fragment]
+        fragment_name, fragment_options = Array.from(options[:fragment])
+        fragment_name = fragment_name.to_s
 
-      if String === fragment || Symbol === fragment
-        fragment_name = fragment.to_s
         path = @base.traveled_path.join(".")
         @name = fragment_name
 
         @fragments.push(
-          {type: fragment_name, partial: partial_name, path: path}
+          {type: fragment_name, path: path, options: fragment_options}
         )
+      end
+
+      if options[:partial]
+        partial_name, partial_opts = options[:partial]
+        fragment = partial_opts[:fragment]
+
+        if String === fragment || Symbol === fragment
+          fragment_name = fragment.to_s
+          path = @base.traveled_path.join(".")
+          @name = fragment_name
+
+          @fragments.push(
+            {type: fragment_name, path: path}
+          )
+        end
       end
     end
   end

@@ -24,8 +24,8 @@ RSpec.describe "Props::Template fragments" do
         }
       },
       fragments: [
-        {type: :simple, partial: "simple", path: "outer.inner"},
-        {type: :simple, partial: "simple", path: "outer.inner2"}
+        {type: :simple, path: "outer.inner"},
+        {type: :simple, path: "outer.inner2"}
       ]
     })
   end
@@ -60,7 +60,7 @@ RSpec.describe "Props::Template fragments" do
         }
       },
       fragments: [
-        {type: :simple, partial: "simple", path: "outer.inner.simple"}
+        {type: :simple, path: "outer.inner.simple"}
       ]
     })
   end
@@ -81,7 +81,7 @@ RSpec.describe "Props::Template fragments" do
         inner: {}
       },
       fragments: [
-        {type: "simple", partial: "simple", path: "outer.inner"}
+        {type: "simple", path: "outer.inner"}
       ],
       deferred: [
         {url: "?props_at=outer.inner", path: "outer.inner", type: "auto"},
@@ -105,7 +105,7 @@ RSpec.describe "Props::Template fragments" do
         inner: {}
       },
       fragments: [
-        {type: "simple", partial: "simple", path: "outer.inner"}
+        {type: "simple", path: "outer.inner"}
       ],
       deferred: [
         {url: "?props_at=outer.inner", path: "outer.inner", type: "auto"},
@@ -137,8 +137,8 @@ RSpec.describe "Props::Template fragments" do
         {firstName: "foo"}
       ],
       fragments: [
-        {type: "user_list_item", partial: "customer", path: "data.0"},
-        {type: "user_list_item", partial: "customer", path: "data.1"}
+        {type: "user_list_item", path: "data.0"},
+        {type: "user_list_item", path: "data.1"}
       ]
     })
   end
@@ -174,8 +174,8 @@ RSpec.describe "Props::Template fragments" do
         }
       ],
       fragments: [
-        {type: "user", partial: "customer", path: "data.id=1"},
-        {type: "user", partial: "customer", path: "data.id=2"}
+        {type: "user", path: "data.id=1"},
+        {type: "user", path: "data.id=2"}
       ]
     })
   end
@@ -213,8 +213,8 @@ RSpec.describe "Props::Template fragments" do
         }
       ],
       fragments: [
-        {type: "user", partial: "person", path: "data.id=1"},
-        {type: "user", partial: "person", path: "data.id=2"}
+        {type: "user", path: "data.id=1"},
+        {type: "user", path: "data.id=2"}
       ]
     })
   end
@@ -249,8 +249,8 @@ RSpec.describe "Props::Template fragments" do
         }
       ],
       fragments: [
-        {type: "joe@red.com", partial: "person", path: "data.0"},
-        {type: "foo@red.com", partial: "person", path: "data.1"}
+        {type: "joe@red.com", path: "data.0"},
+        {type: "foo@red.com", path: "data.1"}
       ]
     })
   end

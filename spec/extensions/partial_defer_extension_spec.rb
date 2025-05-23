@@ -26,7 +26,7 @@ RSpec.describe "Props::Template fragments" do
         {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto"}
       ],
       fragments: [
-        {type: :simple, partial: "simple", path: "outer.inner"}
+        {type: :simple, path: "outer.inner"}
       ]
     })
   end
@@ -52,7 +52,7 @@ RSpec.describe "Props::Template fragments" do
         {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto"}
       ],
       fragments: [
-        {type: :simple, partial: "simple", path: "outer.inner"}
+        {type: :simple, path: "outer.inner"}
       ]
     })
   end
