@@ -105,7 +105,7 @@ module Props
       end
     end
 
-    def child!(options)
+    def child!(options={}, &block)
       return if @found_block
 
       child_index = @child_index || -1
