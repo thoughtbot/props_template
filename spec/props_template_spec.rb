@@ -219,6 +219,38 @@ RSpec.describe "Props::Base" do
       expect(attrs).to eql_json([])
     end
 
+    it "creates an empty array when passed nothing" do
+      json = Props::Base.new
+      json.array! do
+      end
+
+      attrs = json.result!.strip
+
+      expect(attrs).to eql_json([])
+    end
+
+    it "creates an array of empty array" do
+      json = Props::Base.new
+      json.array! do
+        json.array! do
+        end
+      end
+
+      attrs = json.result!.strip
+
+      expect(attrs).to eql_json([[]])
+    end
+
+    it "only allows child! and array! to be called when inside of array!" do
+      json = Props::Base.new
+
+      expect{
+        json.array! do
+          json.set! :foo, "first"
+        end
+      }.to raise_error(Props::InvalidScopeForArrayError)
+    end
+
     it "creates an array of empty arrays when passed an empty collection" do
       json = Props::Base.new
       json.array! [1] do |num|

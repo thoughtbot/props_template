@@ -1,10 +1,14 @@
 require "oj"
 require "active_support"
-
+require 'byebug'
 module Props
   class InvalidScopeForArrayError < StandardError; end
 
   class InvalidScopeForObjError < StandardError; end
+
+  class InvalidScopeForChildError < StandardError; end
+
+  class InvalidChildIndexError < StandardError; end
 
   class Base
     def initialize(encoder = nil)
@@ -87,8 +91,7 @@ module Props
       end
     end
 
-    # todo, add ability to define contents of array
-    def array!(collection, options = {})
+    def array!(collection = nil, options = {})
       if @scope.nil?
         @scope = :array
         @stream.push_array
@@ -96,8 +99,13 @@ module Props
         raise InvalidScopeForArrayError.new("array! expects exclusive use of this block")
       end
 
-      handle_collection(collection, options) do |item, index|
-        yield item, index
+      if collection.nil?
+        @child_index = nil
+        yield
+      else
+        handle_collection(collection, options) do |item, index|
+          yield item, index
+        end
       end
 
       @scope = :array
@@ -129,6 +137,28 @@ module Props
           object.is_a?(Hash) ? object.fetch(attribute) : object.public_send(attribute)
         )
       end
+    end
+
+    def child!(options = {})
+      if @scope != :array
+        raise InvalidScopeForChildError.new("child! can only be used in a `array!` with no arguments")
+      end
+
+      if !block_given?
+        raise ArgumentError.new("child! requires a block")
+      end
+
+      inner_scope = @scope
+      child_index = @child_index || -1
+      child_index += 1
+
+      # this changes the scope to nil so child in a child will break
+      set_block_content!(options) do
+        yield
+      end
+
+      @scope = inner_scope
+      @child_index = child_index
     end
 
     def result!
