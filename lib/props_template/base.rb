@@ -1,6 +1,6 @@
 require "oj"
 require "active_support"
-require 'byebug'
+
 module Props
   class InvalidScopeForArrayError < StandardError; end
 
