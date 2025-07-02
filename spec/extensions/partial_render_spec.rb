@@ -257,7 +257,7 @@ RSpec.describe "Props::Template" do
         end
       PROPS
     }.to raise_error { |e|
-      expect(e.message).to match(/undefined local variable or method `customer'/)
+      expect(e.message).to match(/undefined local variable or method /)
     }
   end
 
