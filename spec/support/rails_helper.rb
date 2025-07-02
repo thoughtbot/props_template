@@ -8,6 +8,7 @@ require "minitest"
 require "action_view"
 require "action_view/testing/resolvers"
 require "action_view/template/resolver"
+require "action_dispatch"
 
 class FakeView < ActionView::Base
   # include Rails.application.routes.url_helpers
@@ -70,5 +71,12 @@ ActionView::Template.register_template_handler :props, Props::Handler
 RSpec.configure do |config|
   config.before(:example) do
     @controller = ActionView::TestCase::TestController.new
+    @controller.request = ActionDispatch::TestRequest.create
+    @controller.response = ActionDispatch::TestResponse.new
+    @controller.instance_variable_set(:@_response, @controller.response)
+    @controller.cache_store = Rails.cache
+    view_path = File.join(File.dirname(__FILE__), "../fixtures")
+    @controller.prepend_view_path(view_path)
+    @controller.formats = [:json]
   end
 end
