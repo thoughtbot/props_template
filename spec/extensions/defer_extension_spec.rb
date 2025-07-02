@@ -30,6 +30,33 @@ RSpec.describe "Props::Template" do
     })
   end
 
+  it "disables deferments" do
+    json = render(<<~PROPS)
+      json.disable_deferments!
+
+      json.outer do
+        json.inner(defer: [:auto, placeholder: {}]) do
+          json.greeting(defer: :auto) do
+            json.foo 'hello world'
+          end
+        end
+      end
+
+      json.deferred json.deferred!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        inner: {
+          greeting: {
+            foo: "hello world"
+          }
+        }
+      },
+      deferred: []
+    })
+  end
+
   it "defers a block from loading, and replaces with a custom placeholder" do
     json = render(<<~PROPS)
       json.outer do
