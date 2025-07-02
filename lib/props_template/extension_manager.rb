@@ -12,9 +12,16 @@ module Props
       @cache = Cache.new(@context)
     end
 
+    def disable_deferments
+      @deferment.disable!
+    end
+
     def refine_options(options, item = nil)
       options = @partialer.refine_options(options, item)
-      options = @deferment.refine_options(options, item)
+      if !@deferment.disabled
+        options = @deferment.refine_options(options, item)
+      end
+
       Cache.refine_options(options, item)
     end
 
@@ -40,7 +47,7 @@ module Props
     def handle(options)
       return yield if !has_extensions(options)
 
-      if options[:defer]
+      if options[:defer] && !@deferment.disabled
         placeholder = @deferment.handle(options)
         base.stream.push_value(placeholder)
         @fragment.handle(options)

@@ -26,6 +26,7 @@ module Props
       :extract!,
       :deferred!,
       :fragments!,
+      :disable_deferments!,
       :set_block_content!,
       :traveled_path!,
       to: :builder!
