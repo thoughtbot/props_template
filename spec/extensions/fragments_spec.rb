@@ -106,7 +106,7 @@ RSpec.describe "Props::Template fragments" do
         {type: "simple", partial: "simple", path: "outer.inner"}
       ],
       deferred: [
-        {url: "?props_at=outer.inner", path: "outer.inner", type: "auto"},
+        {url: "/?props_at=outer.inner", path: "outer.inner", type: "auto"}
       ]
     })
   end
