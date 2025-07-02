@@ -1,0 +1,5 @@
+json.greeting "Hello world"
+
+json.data do
+  yield
+end
