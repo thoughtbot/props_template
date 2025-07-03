@@ -9,16 +9,16 @@ module Props
 
     def handle(options)
       return if !options[:partial]
-      partial_name, partial_opts = options[:partial]
+      _partial_name, partial_opts = options[:partial]
       fragment = partial_opts[:fragment]
 
       if String === fragment || Symbol === fragment
-        fragment_name = fragment.to_s
+        key = fragment.to_s
         path = @base.traveled_path.join(".")
-        @name = fragment_name
+        @name =key 
 
         @fragments.push(
-          {type: fragment_name, partial: partial_name, path: path}
+          {id: key, path: path}
         )
       end
     end
