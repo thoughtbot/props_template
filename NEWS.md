@@ -1,5 +1,11 @@
 # News
 
+## 1.0.0.alpha
+  * Breaking change with how the fragments work. Where prior it was
+  `{type: fragment_name, partial: partial_name, path: path}` the payload is now
+  changed to`{id: key, path: path}`. This should only affect superglue users.
+  * Rest of API is stablizing with next release of Superglue v2
+
 ## 0.38.0 (Jul 13, 2025)
   * Add ability to render a partial as a layout
   * Add child! which works only within an array! block
