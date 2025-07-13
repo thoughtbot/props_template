@@ -1,5 +1,10 @@
 # News
 
+## 0.38.0 (Jul 13, 2025)
+  * Add ability to render a partial as a layout
+  * Add child! which works only within an array! block
+  * Add ability to disable all deferements via json.disable_deferements!
+
 ## 0.37.0 (Dec 31, 2024)
   * Add a `dig` option for traversing into a template.
     It's basically an alias of the already existing `search` option.
