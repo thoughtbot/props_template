@@ -640,6 +640,28 @@ json.flash flash.to_h
 **NOTE** PropsTemplate inverts the usual Rails rendering flow. PropsTemplate
 will render Layout first, then the template when `yield json` is used.
 
+
+### Layouts in API-only Rails apps
+
+If your controllers inherit from `ActionController::API` (typical in API-only Rails apps),
+the layout feature won’t work out of the box, because `ActionController::API`
+does not include layout support.
+
+To enable layout rendering, you can include `ActionView::Layouts` manually,
+then use `layout "your_own_layout"` as usual:
+
+```ruby
+module Api
+  class BaseController < ActionController::API
+    include ActionView::Layouts
+
+    layout "api"
+  end
+end
+```
+
+Without this, Rails will silently skip the layout, which can be tricky to notice.
+
 ## Change key format
 By default, keys are not formatted. This is intentional. By being explicit with your keys,
 it makes your views quicker and more easily diggable when working in JavaScript land.
