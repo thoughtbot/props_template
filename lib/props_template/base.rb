@@ -10,15 +10,18 @@ module Props
 
   class Base
     def initialize(encoder = nil)
+      @result = nil
       @stream = Oj::StringWriter.new(mode: :rails)
       @scope = nil
     end
 
     def set_block_content!(options = {})
       @scope = nil
+      @result = nil
       yield
       if @scope.nil?
         @stream.push_object
+        @result = {}
       end
       @stream.pop
     end
@@ -26,9 +29,12 @@ module Props
     def handle_set_block(key, options)
       key = format_key(key)
       @stream.push_key(key)
+      result = @result
       set_block_content!(options) do
         yield
       end
+      result[key] = @result
+      @result = result
     end
 
     def format_key(key)
@@ -42,6 +48,7 @@ module Props
 
       if @scope.nil?
         @scope = :object
+        @result = {}
         @stream.push_object
       end
 
@@ -51,6 +58,7 @@ module Props
         end
       else
         key = format_key(key)
+        @result[key] = value
         @stream.push_value(value, key)
       end
 
@@ -64,9 +72,12 @@ module Props
     end
 
     def handle_collection_item(collection, item, index, options)
+      result = @result
       set_block_content!(options) do
         yield
       end
+      result[index] = @result
+      @result = result
     end
 
     def refine_all_item_options(all_options)
@@ -93,6 +104,7 @@ module Props
       if @scope.nil?
         @scope = :array
         @stream.push_array
+        @result = []
       else
         raise InvalidScopeForArrayError.new("array! expects exclusive use of this block")
       end
@@ -150,10 +162,13 @@ module Props
       child_index = @child_index || -1
       child_index += 1
 
+      result = @result
       # this changes the scope to nil so child in a child will break
       set_block_content!(options) do
         yield
       end
+      result[child_index] = @result
+      @result = result
 
       @scope = inner_scope
       @child_index = child_index
