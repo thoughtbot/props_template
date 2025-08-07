@@ -11,7 +11,6 @@ module Props
   class Base
     def initialize(encoder = nil)
       @result = nil
-      @stream = Oj::StringWriter.new(mode: :rails)
       @scope = nil
     end
 
@@ -20,15 +19,12 @@ module Props
       @result = nil
       yield
       if @scope.nil?
-        @stream.push_object
         @result = {}
       end
-      @stream.pop
     end
 
     def handle_set_block(key, options)
       key = format_key(key)
-      @stream.push_key(key)
       result = @result
       set_block_content!(options) do
         yield
@@ -49,7 +45,6 @@ module Props
       if @scope.nil?
         @scope = :object
         @result = {}
-        @stream.push_object
       end
 
       if block_given?
@@ -59,7 +54,6 @@ module Props
       else
         key = format_key(key)
         @result[key] = value
-        @stream.push_value(value, key)
       end
 
       @scope = :object
@@ -103,7 +97,6 @@ module Props
     def array!(collection = nil, options = {})
       if @scope.nil?
         @scope = :array
-        @stream.push_array
         @result = []
       else
         raise InvalidScopeForArrayError.new("array! expects exclusive use of this block")
@@ -176,15 +169,10 @@ module Props
 
     def result!
       if @scope.nil?
-        @stream.push_object
+        "{}"
+      else
+        JSON.generate(@result)
       end
-      @stream.pop
-
-      json = @stream.raw_json
-      @stream.reset
-
-      @scope = nil
-      json
     end
   end
 end
