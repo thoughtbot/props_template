@@ -169,10 +169,14 @@ module Props
 
     def result!
       if @scope.nil?
-        "{}"
-      else
-        JSON.generate(@result)
+        @result = {}
       end
+
+      json = JSON.fast_generate(@result)
+      @result = nil
+
+      @scope = nil
+      json
     end
   end
 end
