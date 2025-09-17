@@ -55,15 +55,16 @@ module Props
         options = @em.refine_options(options)
       end
 
-      super(key, options, &block)
+      super
     end
 
     def handle_set_block(key, options)
-      @traveled_path.push(key)
       n = 1
       if (suffix = options[:path_suffix])
         n += suffix.length
         @traveled_path.push(suffix)
+      else
+        @traveled_path.push(key)
       end
 
       super

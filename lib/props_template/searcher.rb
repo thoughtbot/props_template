@@ -11,6 +11,7 @@ module Props
       @builder = builder
       @traveled_path = []
       @partialer = Partialer.new(self, context, builder)
+      @fragment_name = nil
     end
 
     def deferred!
@@ -24,12 +25,19 @@ module Props
     def found!
       pass_opts = @found_options.clone || {}
       pass_opts.delete(:defer)
-      traveled_path = @traveled_path[1..] || []
+      traveled_path = @traveled_path || []
       if !traveled_path.empty?
         pass_opts[:path_suffix] = traveled_path
       end
 
-      [@found_block, pass_opts]
+      fragment_name = Fragment.fragment_name_from_options(pass_opts)
+      if fragment_name
+        @fragment_name = fragment_name
+        @traveled_path = []
+      end
+
+      fragment_context = @fragment_name
+      [@found_block, @traveled_path, pass_opts, fragment_context]
     end
 
     def set_block_content!(*args)
@@ -50,6 +58,12 @@ module Props
 
         @depth += 1
         if options[:partial]
+          fragment_name = Fragment.fragment_name_from_options(options)
+          if fragment_name
+            @fragment_name = fragment_name
+            @traveled_path = []
+          end
+
           @partialer.handle(options)
         else
           yield
@@ -94,6 +108,11 @@ module Props
 
           @depth += 1
           if pass_opts[:partial]
+            fragment_name = Fragment.fragment_name_from_options(pass_opts)
+            if fragment_name
+              @fragment_name = fragment_name
+              @traveled_path = []
+            end
             # todo: what happens when cached: true is passed?
             # would there be any problems with not using the collection_rende?
             @partialer.handle(pass_opts)
@@ -105,7 +124,7 @@ module Props
       end
     end
 
-    def child!(options={}, &block)
+    def child!(options = {}, &block)
       return if @found_block
 
       child_index = @child_index || -1
@@ -128,7 +147,7 @@ module Props
         @depth -= 1
       end
 
-      @child_index = child_index    
+      @child_index = child_index
     end
   end
 end

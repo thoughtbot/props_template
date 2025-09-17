@@ -24,11 +24,12 @@ RSpec.describe "Searcher" do
       end
     end
 
-    found_block, found_options = json.found!
+    found_block, found_path, found_options = json.found!
     expect(found_block).to eql(target_proc)
+    expect(found_path).to eql ["outer", "inner", "hit"]
     expect(found_options).to eql({
       some_options: 1,
-      path_suffix: ["inner", "hit"]
+      path_suffix: ["outer", "inner", "hit"]
     })
   end
 
@@ -134,8 +135,9 @@ RSpec.describe "Searcher" do
       end
     end
 
-    found_block, found_options = json.found!
-    expect(found_options).to eql({some_options: 1, path_suffix: [1]})
+    found_block, found_path, found_options = json.found!
+    expect(found_options).to eql({some_options: 1, path_suffix: ["outer", 1]})
+    expect(found_path).to eql(["outer", 1])
     expect(found_block.call).to eql("world")
   end
 

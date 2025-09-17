@@ -7,18 +7,28 @@ module Props
       @fragments = fragments
     end
 
-    def handle(options)
+    def self.fragment_name_from_options(options)
       return if !options[:partial]
-      _partial_name, partial_opts = options[:partial]
+
+      _, partial_opts = [*options[:partial]]
+      return unless partial_opts
+
       fragment = partial_opts[:fragment]
 
       if String === fragment || Symbol === fragment
-        key = fragment.to_s
-        path = @base.traveled_path.join(".")
-        @name =key 
+        fragment.to_s
+      end
+    end
 
+    def handle(options)
+      fragment_name = self.class.fragment_name_from_options(options)
+      path = @base.traveled_path
+        .map { |item| item.is_a?(Array) ? item[0] : item }
+        .join(".")
+
+      if fragment_name
         @fragments.push(
-          {id: key, path: path}
+          {id: fragment_name, path: path}
         )
       end
     end

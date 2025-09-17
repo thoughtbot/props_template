@@ -30,11 +30,14 @@ module Props
       :disable_deferments!,
       :set_block_content!,
       :traveled_path!,
+      :fragment_context!,
       to: :builder!
 
     def initialize(context = nil, options = {})
       @builder = BaseWithExtensions.new(self, context, options)
       @context = context
+      @fragment_context = nil
+      @found_path = []
     end
 
     def set!(key, options = {}, &block)
@@ -48,7 +51,9 @@ module Props
         options.delete(:dig)
 
         @builder.set!(key, options, &block)
-        found_block, found_options = @builder.found!
+        found_block, found_path, found_options, fragment_context = @builder.found!
+        @found_path = found_path || []
+        @fragment_context = fragment_context
         @builder = prev_builder
 
         if found_block
@@ -57,6 +62,14 @@ module Props
       else
         @builder.set!(key, options, &block)
       end
+    end
+
+    def found_path!
+      @found_path.join(".")
+    end
+
+    def fragment_context!
+      @fragment_context
     end
 
     def builder!
