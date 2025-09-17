@@ -25,7 +25,7 @@ RSpec.describe("searching the template") do
       foo: "bar"
     })
   end
-  
+
   it "aliases dig to search and finds the correct node and merges it to the top" do
     json = render(<<~PROPS)
       json.data(search: ['data', 'comment', 'details']) do
@@ -445,6 +445,106 @@ RSpec.describe("searching the template") do
         },
         fragments: []
       })
+    end
+
+    context "fragment context" do
+      it "renders the fragment context" do
+        json = render(<<~PROPS)
+          json.data(dig: ['data', 'comment']) do
+            json.comment(partial: ['comment', fragment: 'foobar']) do
+            end
+          end
+          json.fragments json.fragments!
+          json.fragmentContext json.fragment_context!
+          json.path json.traveled_path!
+        PROPS
+
+        expect(json).to eql_json({
+          data: {
+            title: "some title",
+            details: {
+              body: "hello world"
+            }
+          },
+          fragments: [
+            {id: "foobar", path: "data"}
+          ],
+          fragmentContext: "foobar",
+          path: ""
+        })
+      end
+
+      it "renders the fragment context with a grafting path relative to the key" do
+        json = render(<<~PROPS)
+          json.data(dig: ['data', 'comment', 'details']) do
+            json.comment(partial: ['comment', fragment: 'foobar']) do
+            end
+          end
+          json.fragments json.fragments!
+          json.fragmentContext json.fragment_context!
+          json.path json.found_path!
+        PROPS
+
+        expect(json).to eql_json({
+          data: {
+            body: "hello world"
+          },
+          fragments: [],
+          fragmentContext: "foobar",
+          path: "details"
+        })
+      end
+
+      it "renders the fragment context for an array item relative to the key" do
+        json = render(<<~PROPS)
+          json.data(dig: ['data','comment', 0]) do
+            json.comment do
+              json.array! [0], {partial: ['comment', fragment: ->(item){ "foo-"+item.to_s }]} do
+              end
+            end
+          end
+          json.fragments json.fragments!
+          json.fragment_context json.fragment_context!
+          json.path json.found_path!
+        PROPS
+
+        expect(json).to eql_json({
+          data: {
+            title: "some title",
+            details: {
+              body: "hello world"
+            }
+          },
+          fragments: [
+            {id: "foo-0", path: "data"}
+          ],
+          fragment_context: "foo-0",
+          path: ""
+        })
+      end
+
+      it "renders the fragment context for an array item relative to the key" do
+        json = render(<<~PROPS)
+          json.data(dig: ['data','comment', 0, 'details']) do
+            json.comment do
+              json.array! [0], {partial: ['comment', fragment: ->(item){ "foo-"+item.to_s }]} do
+              end
+            end
+          end
+          json.fragments json.fragments!
+          json.fragment_context json.fragment_context!
+          json.path json.found_path!
+        PROPS
+
+        expect(json).to eql_json({
+          data: {
+            body: "hello world"
+          },
+          fragments: [],
+          fragment_context: "foo-0",
+          path: "details"
+        })
+      end
     end
 
     it "passes the found child obj options back to the parent" do
