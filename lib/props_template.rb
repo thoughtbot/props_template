@@ -64,6 +64,10 @@ module Props
       end
     end
 
+    def partial!(**options)
+      @context.render options
+    end
+
     def found_path!
       @found_path.join(".")
     end
