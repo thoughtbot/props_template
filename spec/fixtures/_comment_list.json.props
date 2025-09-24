@@ -1,0 +1,6 @@
+items = [{id: 9, title: "hello"}]
+json.array!(items, partial: [
+  "comment",
+  fragment: ->(item) { "foo-#{item[:id]}" }
+]) do
+end

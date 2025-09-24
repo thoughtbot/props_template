@@ -33,11 +33,12 @@ module Props
       fragment_name = Fragment.fragment_name_from_options(pass_opts)
       if fragment_name
         @fragment_name = fragment_name
-        @traveled_path = []
+        @fragment_path = @traveled_path.clone
       end
 
       fragment_context = @fragment_name
-      [@found_block, @traveled_path, pass_opts, fragment_context]
+
+      [@found_block, @traveled_path, pass_opts, @fragment_path, fragment_context]
     end
 
     def set_block_content!(*args)
@@ -61,7 +62,7 @@ module Props
           fragment_name = Fragment.fragment_name_from_options(options)
           if fragment_name
             @fragment_name = fragment_name
-            @traveled_path = []
+            @fragment_path = @traveled_path.clone
           end
 
           @partialer.handle(options)
@@ -111,7 +112,7 @@ module Props
             fragment_name = Fragment.fragment_name_from_options(pass_opts)
             if fragment_name
               @fragment_name = fragment_name
-              @traveled_path = []
+              @fragment_path = @traveled_path.clone
             end
             # todo: what happens when cached: true is passed?
             # would there be any problems with not using the collection_rende?
