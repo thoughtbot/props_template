@@ -97,6 +97,17 @@ module Props
 
         if item
           pass_opts = @partialer.refine_options(options, item)
+
+          if (key = pass_opts[:key])
+            val = if item.respond_to? key
+              item.send(key)
+            elsif item.is_a? Hash
+              item[key] || item[key.to_sym]
+            end
+
+            pass_opts[:key] = [pass_opts[:key], val]
+          end
+
           @traveled_path.push(key_index)
 
           if @depth == @search_path.size - 1
