@@ -623,7 +623,10 @@ A single layout is supported. To use, create an `application.json.props` in
 ```ruby
 json.data do
   # template runs here.
-  yield json
+  _.call(json)
+  # NOTE: you can also use `yield json` instead, but prism sees this as
+  # a syntax error, so the `_.call(json)` is a workaround.
+  # See: https://github.com/thoughtbot/props_template/issues/58
 end
 
 json.header do
