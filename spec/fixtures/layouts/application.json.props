@@ -1,3 +1,6 @@
 json.data do
-  yield json
+  # yield json
+  # also works, but prism see it as a syntax error
+  # so we use _.call(json) instead.
+  _.call(json)
 end
