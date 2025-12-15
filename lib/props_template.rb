@@ -10,6 +10,7 @@ require "active_support/core_ext/array"
 require "props_template/searcher"
 require "props_template/handler"
 require "props_template/options"
+require "props_template/helper"
 require "props_template/version"
 
 require "active_support"
