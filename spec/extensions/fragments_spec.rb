@@ -30,6 +30,35 @@ RSpec.describe "Props::Template fragments" do
     })
   end
 
+  it "renders with a partial and populates fragments using an inline option object" do
+    json = render(<<~PROPS)
+      json.outer do
+        fragment_opts = Props::Options.new
+          .partial('simple')
+          .fragment(:simple)
+
+        json.inner(fragment_opts)
+        json.inner2(fragment_opts)
+      end
+      json.fragments json.fragments!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        inner: {
+          foo: "bar"
+        },
+        inner2: {
+          foo: "bar"
+        }
+      },
+      fragments: [
+        {id: :simple, path: "outer.inner"},
+        {id: :simple, path: "outer.inner2"}
+      ]
+    })
+  end
+
   it "renders with a partial and populates fragments even when caching" do
     render(<<~PROPS)
       json.outer do
@@ -78,7 +107,7 @@ RSpec.describe "Props::Template fragments" do
 
     expect(json).to eql_json({
       outer: {
-        inner: {foo:"bar"}
+        inner: {foo: "bar"}
       },
       fragments: [
         {id: "simple", path: "outer.inner"}
@@ -86,7 +115,7 @@ RSpec.describe "Props::Template fragments" do
       deferred: []
     })
   end
-  
+
   it "renders deferment and populates fragments" do
     json = render(<<~PROPS)
       json.outer do
@@ -240,10 +269,10 @@ RSpec.describe "Props::Template fragments" do
     expect(json).to eql_json({
       data: [
         {
-          email: "joe@red.com",
+          email: "joe@red.com"
         },
         {
-          email: "foo@red.com",
+          email: "foo@red.com"
         }
       ],
       fragments: [

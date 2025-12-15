@@ -53,7 +53,7 @@ module Props
         @fragment.handle(options)
       else
         handle_cache(options) do
-          base.set_block_content! do
+          base.set_content! do
             if options[:partial]
               @fragment.handle(options)
               @partialer.handle(options)

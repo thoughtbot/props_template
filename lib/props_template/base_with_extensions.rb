@@ -26,7 +26,7 @@ module Props
       @traveled_path.join(".")
     end
 
-    def set_block_content!(options = {})
+    def set_content!(options = {})
       return super if !@em.has_extensions(options)
 
       @em.handle(options) do
@@ -51,11 +51,16 @@ module Props
     end
 
     def set!(key, options = {}, &block)
-      if block
+      if block || options.is_a?(Props::Options)
         options = @em.refine_options(options)
       end
 
-      super
+      if !block && options.is_a?(Props::Options)
+        options.valid_for_set!
+        super {}
+      else
+        super
+      end
     end
 
     def handle_set_block(key, options)

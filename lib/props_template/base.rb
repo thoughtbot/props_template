@@ -14,7 +14,7 @@ module Props
       @scope = nil
     end
 
-    def set_block_content!(options = {})
+    def set_content!(options = {})
       @scope = nil
       yield
       if @scope.nil?
@@ -26,7 +26,7 @@ module Props
     def handle_set_block(key, options)
       key = format_key(key)
       @stream.push_key(key)
-      set_block_content!(options) do
+      set_content!(options) do
         yield
       end
     end
@@ -64,7 +64,7 @@ module Props
     end
 
     def handle_collection_item(collection, item, index, options)
-      set_block_content!(options) do
+      set_content!(options) do
         yield
       end
     end
@@ -97,13 +97,20 @@ module Props
         raise InvalidScopeForArrayError.new("array! expects exclusive use of this block")
       end
 
-      if collection.nil?
-        @child_index = nil
-        yield
-      else
-        handle_collection(collection, options) do |item, index|
-          yield item, index
+      if block_given?
+        if collection.nil?
+          @child_index = nil
+          yield
+        else
+          handle_collection(collection, options) do |item, index|
+            yield item, index
+          end
         end
+      elsif options.is_a?(Props::Options)
+        options.valid_for_set!
+        handle_collection(collection, options) {}
+      else
+        raise ArgumentError.new("array! requires a block when no Props::Options object is given")
       end
 
       @scope = :array
@@ -147,7 +154,7 @@ module Props
       child_index += 1
 
       # this changes the scope to nil so child in a child will break
-      set_block_content!(options) do
+      set_content!(options) do
         yield
       end
 

@@ -31,6 +31,27 @@ RSpec.describe "Props::Template caching" do
     })
   end
 
+  it "caches an object using an inline options object" do
+    json = render(<<~PROPS)
+      json.author(Props::Options.new.cache('some_cache_key')) do
+        json.firstName 'hit'
+      end
+
+      json.author2(Props::Options.new.cache('some_cache_key')) do
+        json.firstName 'miss'
+      end
+    PROPS
+
+    expect(json).to eql_json({
+      author: {
+        firstName: "hit"
+      },
+      author2: {
+        firstName: "hit"
+      }
+    })
+  end
+
   it "caches an object with newlines" do
     json = render(<<~PROPS)
       json.author(cache: 'some_cache_key') do
