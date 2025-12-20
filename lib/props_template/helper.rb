@@ -1,6 +1,6 @@
 module Props
   module Helper
-    def props_options
+    def with
       Props::Options.new
     end
   end
