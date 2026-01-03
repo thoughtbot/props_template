@@ -3,5 +3,5 @@ gemspec
 
 gem "rspec"
 gem "byebug"
-gem "rails", "~> 7.0.0"
+gem "rails", "~> 8.1.0"
 gem "standard", group: [:development, :test]
