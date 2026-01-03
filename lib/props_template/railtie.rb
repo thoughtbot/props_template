@@ -6,6 +6,7 @@ module Props
     initializer :props_template do
       ActiveSupport.on_load :action_view do
         ActionView::Template.register_template_handler :props, Props::Handler
+        ActionView::Base.include Props::Helper
         require "props_template/dependency_tracker"
         require "props_template/layout_patch"
         require "props_template/partial_patch"

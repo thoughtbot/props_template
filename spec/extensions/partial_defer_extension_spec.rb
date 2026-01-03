@@ -31,6 +31,30 @@ RSpec.describe "Props::Template fragments" do
     })
   end
 
+  it "defers work together with partials using an options object" do
+    json = render(<<~PROPS)
+      json.outer do
+        json.inner(Props::Options.new.partial('simple').fragment(:simple).defer(:auto)) do
+        end
+      end
+
+      json.defers json.deferred!
+      json.fragments json.fragments!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        inner: {}
+      },
+      defers: [
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto"}
+      ],
+      fragments: [
+        {id: :simple, path: "outer.inner"}
+      ]
+    })
+  end
+
   it "overrides existing props_at paramenters" do
     @controller.request.path = "/some_url?props_at=outer"
 

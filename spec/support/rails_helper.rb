@@ -11,6 +11,8 @@ require "action_view/template/resolver"
 require "action_dispatch"
 
 class FakeView < ActionView::Base
+  include Props::Helper
+
   # include Rails.application.routes.url_helpers
   # undef_method :fragment_name_with_digest if method_defined? :fragment_name_with_digest
   # undef_method :cache_fragment_name if method_defined? :cache_fragment_name

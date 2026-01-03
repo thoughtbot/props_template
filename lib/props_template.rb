@@ -9,6 +9,8 @@ require "active_support/core_ext/string/output_safety"
 require "active_support/core_ext/array"
 require "props_template/searcher"
 require "props_template/handler"
+require "props_template/options"
+require "props_template/helper"
 require "props_template/version"
 
 require "active_support"
@@ -28,7 +30,7 @@ module Props
       :deferred!,
       :fragments!,
       :disable_deferments!,
-      :set_block_content!,
+      :set_content!,
       :traveled_path!,
       :fragment_context!,
       to: :builder!

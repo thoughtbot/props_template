@@ -30,6 +30,29 @@ RSpec.describe "Props::Template" do
     })
   end
 
+  it "defers a block from loading using an options object" do
+    json = render(<<~PROPS)
+      json.outer do
+        json.inner(Props::Options.new.defer(:auto)) do
+          json.greeting do
+            json.foo 'hello world'
+          end
+        end
+      end
+
+      json.deferred json.deferred!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        inner: {}
+      },
+      deferred: [
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto"}
+      ]
+    })
+  end
+
   it "disables deferments" do
     json = render(<<~PROPS)
       json.disable_deferments!
@@ -79,6 +102,28 @@ RSpec.describe "Props::Template" do
       ]
     })
   end
+  it "defers a block from loading, and replaces with a custom placeholder from an options object" do
+    json = render(<<~PROPS)
+      json.outer do
+        json.inner(Props::Options.new.defer(:auto, placeholder: [])) do
+          json.greeting do
+            json.foo 'hello world'
+          end
+        end
+      end
+
+      json.deferred json.deferred!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        inner: []
+      },
+      deferred: [
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto"}
+      ]
+    })
+  end
 
   it "defers a block from loading, and passes success and fail types" do
     json = render(<<~PROPS)
@@ -96,6 +141,29 @@ RSpec.describe "Props::Template" do
     expect(json).to eql_json({
       outer: {
         inner: nil
+      },
+      deferred: [
+        {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto", successAction: "SUCCESS", failAction: "FAIL"}
+      ]
+    })
+  end
+
+  it "defers a block from loading, and passes success and fail types using an options object" do
+    json = render(<<~PROPS)
+      json.outer do
+        json.inner(Props::Options.new.defer(:auto, success_action: 'SUCCESS', fail_action: 'FAIL')) do
+          json.greeting do
+            json.foo 'hello world'
+          end
+        end
+      end
+
+      json.deferred json.deferred!
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        inner: {}
       },
       deferred: [
         {url: "/some_url?props_at=outer.inner", path: "outer.inner", type: "auto", successAction: "SUCCESS", failAction: "FAIL"}

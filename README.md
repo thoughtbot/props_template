@@ -36,7 +36,7 @@ json.menu do
   end
 end
 
-json.dashboard(defer: :auto) do
+json.dashboard(with.defer(:auto)) do
   sleep 5
   json.complexPostMetric 500
 end
@@ -46,7 +46,7 @@ json.posts do
   paged_posts = @posts.page(page_num).per(20)
 
   json.list do
-    json.array! paged_posts, key: :id do |post|
+    json.array! paged_posts, with.id_key(:id) do |post|
       json.id post.id
       json.description post.description
       json.commentsCount post.comments.count
@@ -59,8 +59,7 @@ json.posts do
   json.total @posts.count
 end
 
-json.footer partial: 'shared/footer' do
-end
+json.footer with.partial('shared/footer')
 ```
 
 ## Installation
@@ -96,13 +95,13 @@ You can also add a [layout](#layouts).
 Defines the attribute or structure. All keys are not formatted by default. See [Change Key Format](#change-key-format) to change this behavior.
 
 ```ruby
-json.set! :authorDetails, {...options} do
+json.set! :authorDetails, with.some_option do
   json.set! :firstName, 'David'
 end
 
 # or
 
-json.authorDetails, {...options} do
+json.authorDetails, with.some_option do
   json.firstName 'David'
 end
 
@@ -115,7 +114,7 @@ The inline form defines key and value
 | Parameter | Notes |
 | :--- | :--- |
 | key | A json object key|
-| value | A value |
+| value | A value or an [options][#options] object enabled with [partial](#partials)|
 
 ```ruby
 
@@ -133,7 +132,7 @@ The block form defines key and structure
 | Parameter | Notes |
 | :--- | :--- |
 | key | A json object key|
-| options | Additional [options](#options)|
+| options | Additional hash [options](#options) or a [options](#options) object|
 | block | Additional `json.set!`s or `json.array!`s|
 
 ```ruby
@@ -149,11 +148,12 @@ end
 ```
 
 The difference between the block form and inline form is
-  1. The block form is an internal node. Functionality such as Partials,
-  Deferment and other [options](#options) are only available on the
-  block form.
-  2. The inline form is considered a leaf node, and you can only [dig](#digging)
-  for internal nodes.
+
+1. Passing options as a [hash](#hash-options) is only available for the
+block form (also called an internal node)
+2. The inline form is considered a leaf node, if you need features like
+partials you may use [options](#options) objects only.
+3. Only internal nodes may dug for [digging](#digging)
 
 ### json.extract!
 Extracts attributes from object or hash in 1 line
@@ -189,7 +189,7 @@ Generates an array of json objects.
 collection = [ {name: 'john'}, {name: 'jim'} ]
 
 json.details do
-  json.array! collection, {...options} do |person|
+  json.array! collection, with.some_option do |person|
     json.firstName person[:name]
   end
 end
@@ -306,11 +306,29 @@ option.
 `application.json.props` when first running `rails superglue:install:web`
 
 ## Options
-Options Functionality such as Partials, Deferments, and Caching can only be
-set on a block. It is normal to see empty blocks.
+
+PropsTemplate provides a `with` helper to build a `Props::Option` object that enable
+functionality such as Partials, Deferments, and Caching
+
+The following are equivalent:
 
 ```ruby
-json.post(partial: 'blog_post') do
+json.post(with.partial('blog_post') 
+```
+
+or 
+
+```ruby
+json.post(Props::Options.new.partial('blog_post') 
+```
+### Hash options
+
+Previously, a normal hash was supported for internal nodes as long as an empty
+block accompanied the option. This option is still supported, but its
+recommended to use the `with` option builder.
+
+```ruby
+json.post(partial: 'blog_post', locals: {post: @post}) do
 end
 ```
 
@@ -321,8 +339,7 @@ Partials are supported. The following will render the file
 with @post, which you can use inside the partial.
 
 ```ruby
-json.one_post partial: ["posts/blog_post", locals: {post: @post}] do
-end
+json.one_post(with.partial("posts/blog_post", locals: {post: @post}))
 ```
 
 Usage with arrays:
@@ -332,8 +349,7 @@ Usage with arrays:
 # Without `as:` option you can use blog_post variable (name is based on partial's name) inside partial
 
 json.posts do
-  json.array! @posts, partial: ["posts/blog_post", locals: {foo: 'bar'}, as: 'post'] do
-  end
+  json.array! @posts, with.partial("posts/blog_post", locals: {foo: 'bar'}, as: 'post')
 end
 ```
 
@@ -344,16 +360,14 @@ cause performance problems. It's best used for things like a shared header or fo
 Do:
 
 ```ruby
-json.partial! partial: "header", locals: {user: @user} do
-end
+json.partial! with.partial("header", locals: {user: @user}) 
 ```
 
 or
 
 ```ruby
 json.posts do
-  json.array! @posts, partial: ["posts/blog_post", locals: {post: @post}] do
-  end
+  json.array! @posts, with.partial("posts/blog_post", locals: {post: @post})
 end
 ```
 
@@ -374,8 +388,7 @@ update cross cutting concerns like a header bar.
 
 ```ruby
 # index.json.props
-json.header partial: ["profile", fragment: "header"] do
-end
+json.header with.partial("profile").fragment("header")
 
 # _profile.json.props
 json.profile do
@@ -390,8 +403,7 @@ When using fragments with Arrays, the argument **MUST** be a lamda:
 ```ruby
 require 'props_template/core_ext'
 
-json.array! ['foo', 'bar'], partial: ["footer", fragment: ->(x){ x == 'foo'}] do
-end
+json.array! ['foo', 'bar'], with.partial("footer").fragment(->(x){ x == 'foo'})
 ```
 
 ### Caching
@@ -402,19 +414,18 @@ use [push_json](http://www.ohler.com/oj/doc/Oj/StringWriter.html#push_json-insta
 Usage:
 
 ```ruby
-json.author(cache: "some_cache_key") do
+json.author(with.cache("some_cache_key")) do
   json.firstName "tommy"
 end
 
 # or
 
-json.profile(cache: "cachekey", partial: ["profile", locals: {foo: 1}]) do
-end
+json.profile(with.cache("cachekey").partial("profile", locals: {foo: 1}))
 
 # or nest it
 
-json.author(cache: "some_cache_key") do
-  json.address(cache: "some_other_cache_key") do
+json.author(with.cache("some_cache_key")) do
+  json.address(with.cache("some_other_cache_key")) do
     json.zip 11214
   end
 end
@@ -425,7 +436,7 @@ When used with arrays, PropsTemplate will use `Rails.cache.read_multi`.
 ```ruby
 require 'props_template/core_ext'
 
-opts = { cache: ->(i){ ['a', i] } }
+opts = with.cache(->(i){ ['a', i] } )
 
 json.array! [4,5], opts do |x|
   json.top "hello" + x.to_s
@@ -433,7 +444,7 @@ end
 
 # or on arrays with partials
 
-opts = { cache: (->(d){ ['a', d.id] }), partial: ["blog_post", as: :blog_post] }
+opts = with.cache(->(d){ ['a', d.id] }).partial("blog_post", as: :blog_post)
 
 json.array! @options, opts do
 end
@@ -457,7 +468,7 @@ store.
 Usage:
 
 ```ruby
-json.dashboard(defer: :manual) do
+json.dashboard(with.defer(:manual)) do
   sleep 10
   json.someFancyMetric 42
 end
@@ -465,7 +476,7 @@ end
 
 # or you can explicitly pass a placeholder
 
-json.dashboard(defer: [:manual, placeholder: {}]) do
+json.dashboard(with.defer(:manual, placeholder: {})) do
   sleep 10
   json.someFancyMetric 42
 end
@@ -476,7 +487,7 @@ A auto option is available:
 **Note** This is a [SuperglueJS][1] specific functionality.
 
 ```ruby
-json.dashboard(defer: :auto) do
+json.dashboard(with.defer(:auto)) do
   sleep 10
   json.someFancyMetric 42
 end
@@ -514,11 +525,11 @@ data = [
 ]
 
 json.posts
-  json.array! data, key: :some_id do |item|
+  json.array! data, with.id_key(:some_id) do |item|
     # By using :key, props_template will append `json.some_id item.some_id`
     # automatically
 
-    json.contact(defer: :auto) do
+    json.contact(with.defer(:auto)) do
       json.address '123 example drive'
     end
   end

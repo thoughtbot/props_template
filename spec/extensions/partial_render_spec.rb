@@ -31,6 +31,45 @@ RSpec.describe "Props::Template" do
   #     "{\"hello\":\"\\u0026lt;\\u0026gt;\"}"
   #   )
   # end
+  it "renders with using an option object" do
+    json = render(<<~PROPS)
+      json.outer(Props::Options.new.partial('simple')) do
+      end
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        foo: "bar"
+      }
+    })
+  end
+
+  it "raises if an option object was empty" do
+    expect {
+      render(<<~PROPS)
+        json.outer(Props::Options.new)
+      PROPS
+    }.to raise_error(ActionView::Template::Error).with_message(/Props::Options can't be empty/)
+  end
+
+  it "renders using an inline option object" do
+    json = render(<<~PROPS)
+      json.outer(Props::Options.new.partial('simple'))
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        foo: "bar"
+      }
+    })
+  end
+  it "raises if an inline option object was used without a partial" do
+    expect {
+      render(<<~PROPS)
+        json.outer(Props::Options.new.defer(:auto))
+      PROPS
+    }.to raise_error(ActionView::Template::Error).with_message(/The partial option must be used with an inline `set!`/)
+  end
 
   it "renders with a partial" do
     json = render(<<~PROPS)
@@ -192,7 +231,21 @@ RSpec.describe "Props::Template" do
       outer: {}
     })
   end
+  it "renders with a partial using an options object with locals" do
+    json = render(<<~PROPS)
+      opts = Props::Options.new
+        .partial('profile', locals: {email: 'joe@joe.com'})
 
+      json.outer(opts) do
+      end
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        email: "joe@joe.com"
+      }
+    })
+  end
   it "renders with a partial with locals" do
     json = render(<<~PROPS)
       opts = {
@@ -227,6 +280,35 @@ RSpec.describe "Props::Template" do
       {email: "joe@j.com"},
       {email: "foo@f.com"}
     ])
+  end
+  it "renders an array of partials using an inline option object" do
+    json = render(<<~PROPS)
+      emails = [
+        'joe@j.com',
+        'foo@f.com',
+      ]
+
+      opts = Props::Options.new.partial('profile', as: :email)
+      json.array! emails, opts
+    PROPS
+
+    expect(json).to eql_json([
+      {email: "joe@j.com"},
+      {email: "foo@f.com"}
+    ])
+  end
+  it "raises if an inline option object was used in an array without a partial" do
+    expect {
+      render(<<~PROPS)
+        emails = [
+          'joe@j.com',
+          'foo@f.com',
+        ]
+
+        opts = Props::Options.new.defer(:auto)
+        json.array! emails, opts
+      PROPS
+    }.to raise_error(ActionView::Template::Error).with_message(/The partial option must be used with an inline `set!`/)
   end
 
   it "renders an array of partials with a default local named after the file" do

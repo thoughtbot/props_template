@@ -225,6 +225,19 @@ RSpec.describe("searching the template") do
       }
     })
   end
+  it "finds the correct node in a partial that uses an inline options object" do
+    json = render(<<~PROPS)
+      json.data(dig: ['data', 'comment', 'details']) do
+        json.comment(Props::Options.new.partial('comment'))
+      end
+    PROPS
+
+    expect(json).to eql_json({
+      data: {
+        body: "hello world"
+      }
+    })
+  end
 
   it "finds a subtree" do
     json = render(<<-PROPS)
@@ -691,6 +704,24 @@ RSpec.describe("searching the template") do
           opts = {
             partial: ['complex_children', locals: {children: [1,2]}]
           }
+
+          json.comments(opts) do
+          end
+        end
+      PROPS
+
+      expect(json).to eql_json({
+        data: {
+          home: "111",
+          cell: "222"
+        }
+      })
+    end
+    it "returns the correct node across nested partials using an inline options object" do
+      json = render(<<~PROPS)
+        json.data(dig: ['data', 'comments', 0, 0, 'details', 'contact', 'phone']) do
+          opts = Props::Options.new
+            .partial('complex_children', locals: {children: [1,2]})
 
           json.comments(opts) do
           end

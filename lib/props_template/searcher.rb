@@ -41,12 +41,12 @@ module Props
       [@found_block, @traveled_path, pass_opts, @fragment_path, fragment_context]
     end
 
-    def set_block_content!(*args)
+    def set_content!(*args)
       yield
     end
 
     def set!(key, options = {}, &block)
-      return if @found_block || !block
+      return if @found_block || !block && !options.is_a?(Props::Options)
 
       if @search_path[@depth] == key.to_s
         @traveled_path.push(key)
