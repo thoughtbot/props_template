@@ -105,6 +105,12 @@ json.authorDetails, with.some_option do
   json.firstName 'David'
 end
 
+# or with hash options
+
+json.authorDetails, {...options} do
+  json.firstName 'David'
+end
+
 
 # => {"authorDetails": { "firstName": "David" }}
 ```
@@ -125,6 +131,10 @@ json.set! :firstName, 'David'
 json.firstName 'David'
 
 # => { "firstName": "David" }
+
+# or
+
+json.postDetails with.partial("blog_post")
 ```
 
 The block form defines key and structure
@@ -340,6 +350,11 @@ with @post, which you can use inside the partial.
 
 ```ruby
 json.one_post(with.partial("posts/blog_post", locals: {post: @post}))
+
+# or with hash options
+
+json.one_post partial: ["posts/blog_post", locals: {post: @post}] do
+end
 ```
 
 Usage with arrays:
