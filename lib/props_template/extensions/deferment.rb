@@ -34,7 +34,7 @@ module Props
       pass_opts
     end
 
-    def handle(options)
+    def handle(options, key, val)
       return if !options[:defer]
 
       type, rest = options[:defer]
@@ -42,8 +42,7 @@ module Props
       success_action = rest[:success_action]
       fail_action = rest[:fail_action]
 
-      if type.to_sym == :auto && options[:key]
-        key, val = options[:key]
+      if type.to_sym == :auto && key && val
         placeholder = {}
         placeholder[key] = val
       end

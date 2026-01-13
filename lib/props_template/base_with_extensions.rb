@@ -82,12 +82,18 @@ module Props
       if !options[:key]
         @traveled_path.push(index)
       else
-        id, val = options[:key]
+        if (key = options[:key])
+          val = if item.respond_to? key
+            item.send(key)
+          elsif item.is_a? Hash
+            item[key] || item[key.to_sym]
+          end
+        end
 
-        if id.nil?
+        if key.nil?
           @traveled_path.push(index)
         else
-          @traveled_path.push("#{id}=#{val}")
+          @traveled_path.push("#{key}=#{val}")
         end
       end
 

@@ -47,8 +47,16 @@ module Props
     def handle(options, item_context = nil)
       return yield if !has_extensions(options)
 
+      if (key = options[:key]) && item_context
+        val = if item_context.respond_to? key
+          item_context.send(key)
+        elsif item_context.is_a? Hash
+          item_context[key] || item_context[key.to_sym]
+        end
+      end
+
       if options[:defer] && !@deferment.disabled
-        placeholder = @deferment.handle(options)
+        placeholder = @deferment.handle(options, key, val)
         base.stream.push_value(placeholder)
         @fragment.handle(options)
       else
@@ -59,14 +67,6 @@ module Props
               @partialer.handle(options)
             else
               yield
-            end
-
-            if (key = options[:key]) && item_context
-              val = if item_context.respond_to? key
-                item_context.send(key)
-              elsif item_context.is_a? Hash
-                item_context[key] || item_context[key.to_sym]
-              end
             end
 
             if key && val
