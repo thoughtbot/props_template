@@ -29,7 +29,7 @@ module Props
     def set_content!(options = {})
       return super if !@em.has_extensions(options)
 
-      @em.handle(options) do
+      @em.handle(options, item_context) do
         yield
       end
     end
@@ -103,16 +103,6 @@ module Props
 
     def refine_item_options(item, options)
       return options if options.empty?
-
-      if (key = options[:key])
-        val = if item.respond_to? key
-          item.send(key)
-        elsif item.is_a? Hash
-          item[key] || item[key.to_sym]
-        end
-
-        options[:key] = [options[:key], val]
-      end
 
       @em.refine_options(options, item)
     end

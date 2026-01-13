@@ -44,7 +44,7 @@ module Props
       options[:defer] || options[:cache] || options[:partial] || options[:key]
     end
 
-    def handle(options)
+    def handle(options, item_context = nil)
       return yield if !has_extensions(options)
 
       if options[:defer] && !@deferment.disabled
@@ -61,9 +61,16 @@ module Props
               yield
             end
 
-            if options[:key]
-              id, val = options[:key]
-              base.set!(id, val)
+            if (key = options[:key]) && item_context
+              val = if item_context.respond_to? key
+                item_context.send(key)
+              elsif item_context.is_a? Hash
+                item_context[key] || item_context[key.to_sym]
+              end
+            end
+
+            if key && val
+              base.set!(key, val)
             end
           end
         end

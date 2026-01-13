@@ -9,13 +9,17 @@ module Props
   class InvalidScopeForChildError < StandardError; end
 
   class Base
+    attr_accessor :item_context
+
     def initialize(encoder = nil)
       @stream = Oj::StringWriter.new(mode: :rails)
       @scope = nil
+      @item_context = nil
     end
 
     def set_content!(options = {})
       @scope = nil
+      @item_context = nil
       yield
       if @scope.nil?
         @stream.push_object
@@ -64,6 +68,8 @@ module Props
     end
 
     def handle_collection_item(collection, item, index, options)
+      @item_context = item
+
       set_content!(options) do
         yield
       end
