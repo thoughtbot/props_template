@@ -117,6 +117,8 @@ RSpec.describe "Props::Template caching" do
   end
 
   it "caches object in an array" do
+    expect_any_instance_of(Props::Cache).to receive(:multi_fetch).and_call_original
+
     json = render(<<~PROPS)
       json.authors do
         opts = {
@@ -134,6 +136,36 @@ RSpec.describe "Props::Template caching" do
         {id: 2},
         {id: 1},
         {id: 2}
+      ]
+    })
+  end
+  it "fetches using multifetch" do
+    expect_any_instance_of(Props::Cache).to receive(:multi_fetch).and_return({
+      ["some_cache", 1] => "{}\n" + {id: 1}.to_json,
+      ["some_cache", 2] => "{}\n" + {id: 2}.to_json,
+      ["some_cache", 3] => "{}\n" + {id: 3}.to_json,
+      ["some_cache", 4] => "{}\n" + {id: 4}.to_json
+    })
+
+    expect_any_instance_of(Props::Cache).to_not receive(:read_fragment_cache)
+
+    json = render(<<~PROPS)
+      json.authors do
+        opts = {
+          cache: (->(i) {['some_cache', i]})
+        }
+        json.array! [1,2,3,4], opts do |id|
+          json.id id
+        end
+      end
+    PROPS
+
+    expect(json).to eql_json({
+      authors: [
+        {id: 1},
+        {id: 2},
+        {id: 3},
+        {id: 4}
       ]
     })
   end

@@ -9,13 +9,17 @@ module Props
   class InvalidScopeForChildError < StandardError; end
 
   class Base
+    attr_accessor :item_context
+
     def initialize(encoder = nil)
       @stream = Oj::StringWriter.new(mode: :rails)
       @scope = nil
+      @item_context = nil
     end
 
     def set_content!(options = {})
       @scope = nil
+      @item_context = nil
       yield
       if @scope.nil?
         @stream.push_object
@@ -59,30 +63,17 @@ module Props
       nil
     end
 
-    def refine_item_options(item, options)
-      options
-    end
-
     def handle_collection_item(collection, item, index, options)
+      @item_context = item
+
       set_content!(options) do
         yield
       end
     end
 
-    def refine_all_item_options(all_options)
-      all_options
-    end
-
     def handle_collection(collection, options)
-      all_opts = collection.map do |item|
-        refine_item_options(item, options.clone)
-      end
-
-      all_opts = refine_all_item_options(all_opts)
-
       collection.each_with_index do |item, index|
-        pass_opts = all_opts[index]
-        handle_collection_item(collection, item, index, pass_opts) do
+        handle_collection_item(collection, item, index, options) do
           # todo: remove index?
           yield item, index
         end

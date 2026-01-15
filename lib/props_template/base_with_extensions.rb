@@ -29,7 +29,7 @@ module Props
     def set_content!(options = {})
       return super if !@em.has_extensions(options)
 
-      @em.handle(options) do
+      @em.handle(options, item_context) do
         yield
       end
     end
@@ -51,10 +51,6 @@ module Props
     end
 
     def set!(key, options = {}, &block)
-      if block || options.is_a?(Props::Options)
-        options = @em.refine_options(options)
-      end
-
       if !block && options.is_a?(Props::Options)
         options.valid_for_set!
         super {}
@@ -78,16 +74,37 @@ module Props
       nil
     end
 
+    def handle_collection(collection, options)
+      if options[:cache]
+        key, rest = [*options[:cache]]
+
+        if ::Proc === key
+          cache_keys = collection.map do |item|
+            key.call(item)
+          end
+          @em.load_cache(cache_keys, rest || {})
+        end
+      end
+
+      super
+    end
+
     def handle_collection_item(collection, item, index, options)
       if !options[:key]
         @traveled_path.push(index)
       else
-        id, val = options[:key]
+        if (key = options[:key])
+          val = if item.respond_to? key
+            item.send(key)
+          elsif item.is_a? Hash
+            item[key] || item[key.to_sym]
+          end
+        end
 
-        if id.nil?
+        if key.nil?
           @traveled_path.push(index)
         else
-          @traveled_path.push("#{id}=#{val}")
+          @traveled_path.push("#{key}=#{val}")
         end
       end
 
@@ -95,26 +112,6 @@ module Props
 
       @traveled_path.pop
       nil
-    end
-
-    def refine_all_item_options(all_options)
-      @em.refine_all_item_options(all_options)
-    end
-
-    def refine_item_options(item, options)
-      return options if options.empty?
-
-      if (key = options[:key])
-        val = if item.respond_to? key
-          item.send(key)
-        elsif item.is_a? Hash
-          item[key] || item[key.to_sym]
-        end
-
-        options[:key] = [options[:key], val]
-      end
-
-      @em.refine_options(options, item)
     end
   end
 end

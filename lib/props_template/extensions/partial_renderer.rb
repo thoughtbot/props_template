@@ -45,22 +45,6 @@ module Props
       end
     end
 
-    def find_and_add_template(all_options)
-      first_opts = all_options[0]
-
-      if first_opts[:partial]
-        partial_opts = block_opts_to_render_opts(@builder, first_opts)
-        template = find_template(partial_opts)
-
-        all_options.map do |opts|
-          opts[:_template] = template
-          opts
-        end
-      else
-        all_options
-      end
-    end
-
     def find_template(partial_opts)
       partial = partial_opts[:partial]
       template_keys = retrieve_template_keys(partial_opts)
@@ -78,7 +62,7 @@ module Props
 
     def block_opts_to_render_opts(builder, options)
       partial, pass_opts = [*options[:partial]]
-      pass_opts ||= {}
+      pass_opts = pass_opts&.clone || {}
       pass_opts[:locals] ||= {}
       pass_opts[:partial] = partial
       pass_opts[:formats] = [:json]
@@ -91,9 +75,17 @@ module Props
       pass_opts
     end
 
-    def handle(options)
-      partial_opts = block_opts_to_render_opts(@builder, options)
-      template = options[:_template] || find_template(partial_opts)
+    def handle(options, item = nil)
+      return options if !options[:partial]
+
+      normalized_options = normalize_options(options, item)
+      partial_opts = block_opts_to_render_opts(@builder, normalized_options)
+      template = if options[:_template]
+        options[:_template]
+      else
+        # mutate the original options to bypass find_template a second time.
+        options[:_template] = find_template(partial_opts)
+      end
 
       render_partial(template, @context, partial_opts)
     end
@@ -133,8 +125,10 @@ module Props
     end
 
     def refine_options(options, item = nil)
-      return options if !options[:partial]
+      options.clone
+    end
 
+    def normalize_options(options, item = nil)
       partial, rest = [*options[:partial]]
       rest = (rest || {}).clone
       locals = (rest[:locals] || {}).clone
@@ -150,20 +144,9 @@ module Props
         raise_invalid_option_as(as) unless /\A[a-z_]\w*\z/.match?(as.to_s)
 
         locals[as] = item
-
-        if (fragment_name = rest[:fragment])
-          if item && ::Proc === fragment_name
-            fragment_name = fragment_name.call(item)
-          end
-
-          rest[:fragment] = fragment_name.to_s
-        end
       end
 
-      pass_opts = options.clone
-      pass_opts[:partial] = [partial, rest]
-
-      pass_opts
+      {partial: [partial, rest]}
     end
   end
 end

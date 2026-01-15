@@ -13,37 +13,27 @@ module Props
     end
 
     def refine_options(options, item = nil)
-      return options if !options[:defer]
-      pass_opts = options.clone
+      options.clone
+    end
 
-      type, rest = [*options[:defer]]
+    def extract_deferment_type(options, item)
+      type, _ = [*options[:defer]]
+      (Proc === type) ? type.call(item) : type
+    end
+
+    def handle(options, type, key, val)
+      return if !options[:defer]
+
+      _, rest = [*options[:defer]]
       rest ||= {
         placeholder: {}
       }
 
-      if item
-        type = (Proc === type) ? type.call(item) : type
-      end
-
-      if type
-        pass_opts[:defer] = [type, rest]
-      else
-        pass_opts.delete(:defer)
-      end
-
-      pass_opts
-    end
-
-    def handle(options)
-      return if !options[:defer]
-
-      type, rest = options[:defer]
       placeholder = rest[:placeholder]
       success_action = rest[:success_action]
       fail_action = rest[:fail_action]
 
-      if type.to_sym == :auto && options[:key]
-        key, val = options[:key]
+      if type.to_sym == :auto && key && val
         placeholder = {}
         placeholder[key] = val
       end

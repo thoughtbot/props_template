@@ -2,23 +2,22 @@ module Props
   class Cache
     delegate :controller, :safe_concat, to: :@context
 
-    def self.refine_options(options, item = nil)
-      return options if !options[:cache]
+    attr_reader :results
 
-      pass_opts = options.clone
-      key, rest = [*options[:cache]]
+    def initialize(context)
+      @context = context
+      @results = {}
+    end
+
+    def self.normalize_options(options, item = nil)
+      key, rest = [*options]
       rest ||= {}
 
       if item && ::Proc === key
         key = key.call(item)
       end
 
-      pass_opts[:cache] = [key, rest]
-      pass_opts
-    end
-
-    def initialize(context)
-      @context = context
+      [key, rest]
     end
 
     attr_reader :context
@@ -48,32 +47,17 @@ module Props
 
       keys.each do |k|
         ckey = key_to_ckey[k]
-        result[k] = read_caches[ckey]
+
+        if read_caches[ckey]
+          result[k] = read_caches[ckey]
+        end
       end
 
       result
     end
 
-    def multi_fetch_and_add_results(all_options)
-      first_opts = all_options[0]
-
-      if first_opts[:cache] && controller.perform_caching
-        keys = all_options.map { |i| i[:cache][0] }
-        c_opts = first_opts[:cache][1]
-        result = multi_fetch(keys, c_opts)
-
-        all_options.map do |opts|
-          key = opts[:cache][0]
-
-          if result.key? key
-            opts[:cache][1][:result] = result[key]
-          end
-
-          opts
-        end
-      else
-        all_options
-      end
+    def load_cache(keys, options = {})
+      @results = results.merge multi_fetch(keys, options)
     end
 
     # Copied from jbuilder
@@ -90,10 +74,9 @@ module Props
     end
 
     def cache_fragment_for(key, options, &block)
+      return results[key] if results[key]
+
       key = cache_key(key, options)
-
-      return options[:result] if options[:result]
-
       read_fragment_cache(key, options) || write_fragment_cache(key, options, &block)
     end
 

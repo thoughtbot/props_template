@@ -53,13 +53,14 @@ module Props
         options.delete(:dig)
 
         @builder.set!(key, options, &block)
-        found_block, found_path, found_options, fragment_path, fragment_context = @builder.found!
+        found_block, found_path, found_options, fragment_path, fragment_context, found_item = @builder.found!
         @found_path = found_path || []
         @fragment_context = fragment_context
         @builder = prev_builder
         @fragment_path = fragment_path
 
         if found_block
+          @builder.item_context = found_item
           set!(key, found_options, &found_block)
         end
       else
