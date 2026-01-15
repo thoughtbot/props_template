@@ -91,7 +91,7 @@ module Props
           result
         end
 
-        meta, raw_json = state.split("\n")
+        meta, raw_json = state.split("\n", 2)
         next_deferred, next_fragments = Oj.load(meta)
         deferred.push(*next_deferred)
         fragments.push(*next_fragments)
