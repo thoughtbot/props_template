@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.description = "PropsTemplate is a direct-to-Oj, JBuilder-like DSL for building JSON. It has support for Russian-Doll caching, layouts, and can be queried by giving the root a key path."
   s.files = Dir["MIT-LICENSE", "README.md", "lib/**/*"]
 
-  s.required_ruby_version = ">= 2.5"
+  s.required_ruby_version = ">= 3.3"
 
   s.add_dependency "activesupport", ">= 7.0", "< 9.0"
   s.add_dependency "actionview", ">= 7.0", "< 9.0"
