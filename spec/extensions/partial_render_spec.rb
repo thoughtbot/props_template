@@ -281,6 +281,27 @@ RSpec.describe "Props::Template" do
       {email: "foo@f.com"}
     ])
   end
+
+  it "renders an array of partials using a single template" do
+    expect_any_instance_of(Props::Partialer).to receive(:find_template).once
+      .and_call_original
+
+    json = render(<<~PROPS)
+      emails = [
+        'joe@j.com',
+        'foo@f.com',
+      ]
+
+      opts = Props::Options.new.partial('profile', as: :email)
+      json.array! emails, opts
+    PROPS
+
+    expect(json).to eql_json([
+      {email: "joe@j.com"},
+      {email: "foo@f.com"}
+    ])
+  end
+
   it "renders an array of partials using an inline option object" do
     json = render(<<~PROPS)
       emails = [

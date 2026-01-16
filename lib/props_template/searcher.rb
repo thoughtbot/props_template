@@ -12,6 +12,7 @@ module Props
       @traveled_path = []
       @partialer = Partialer.new(self, context, builder)
       @fragment_name = nil
+      @found_item = nil
     end
 
     def deferred!
@@ -30,7 +31,7 @@ module Props
         pass_opts[:path_suffix] = traveled_path
       end
 
-      fragment_name = Fragment.fragment_name_from_options(pass_opts)
+      fragment_name = Fragment.fragment_name_from_options(pass_opts, @found_item)
       if fragment_name
         @fragment_name = fragment_name
         @fragment_path = @traveled_path.clone
@@ -38,7 +39,7 @@ module Props
 
       fragment_context = @fragment_name
 
-      [@found_block, @traveled_path, pass_opts, @fragment_path, fragment_context]
+      [@found_block, @traveled_path, pass_opts, @fragment_path, fragment_context, @found_item]
     end
 
     def set_content!(*args)
@@ -97,21 +98,11 @@ module Props
 
         if item
           pass_opts = @partialer.refine_options(options, item)
-
-          if (key = pass_opts[:key])
-            val = if item.respond_to? key
-              item.send(key)
-            elsif item.is_a? Hash
-              item[key] || item[key.to_sym]
-            end
-
-            pass_opts[:key] = [pass_opts[:key], val]
-          end
-
           @traveled_path.push(key_index)
 
           if @depth == @search_path.size - 1
             @found_options = pass_opts
+            @found_item = item
             @found_block = proc {
               yield item, 0
             }
@@ -120,7 +111,7 @@ module Props
 
           @depth += 1
           if pass_opts[:partial]
-            fragment_name = Fragment.fragment_name_from_options(pass_opts)
+            fragment_name = Fragment.fragment_name_from_options(pass_opts, item)
             if fragment_name
               @fragment_name = fragment_name
               @fragment_path = @traveled_path.clone

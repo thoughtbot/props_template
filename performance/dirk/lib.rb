@@ -22,7 +22,7 @@ end
 class FakeContext
   attr_reader :controller
 
-  def cache_fragment_name(key, options)
+  def cache_fragment_name(key, options = nil)
     key
   end
 

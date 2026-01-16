@@ -1,6 +1,9 @@
 module Props
   class ExtensionManager
-    attr_reader :base, :builder, :context
+    attr_reader :base, :builder, :context, :cache, :partialer
+
+    delegate :load_cache, to: :cache
+    delegate :find_and_add_template, to: :partialer
 
     def initialize(base, defered = [], fragments = [])
       @base = base
@@ -16,22 +19,6 @@ module Props
       @deferment.disable!
     end
 
-    def refine_options(options, item = nil)
-      options = @partialer.refine_options(options, item)
-      if !@deferment.disabled
-        options = @deferment.refine_options(options, item)
-      end
-
-      Cache.refine_options(options, item)
-    end
-
-    def refine_all_item_options(all_options)
-      return all_options if all_options.empty?
-
-      all_options = @partialer.find_and_add_template(all_options)
-      @cache.multi_fetch_and_add_results(all_options)
-    end
-
     def deferred
       @deferment.deferred
     end
@@ -44,26 +31,35 @@ module Props
       options[:defer] || options[:cache] || options[:partial] || options[:key]
     end
 
-    def handle(options)
+    def handle(options, item_context = nil)
       return yield if !has_extensions(options)
 
-      if options[:defer] && !@deferment.disabled
-        placeholder = @deferment.handle(options)
+      if (key = options[:key]) && item_context
+        val = if item_context.respond_to? key
+          item_context.send(key)
+        elsif item_context.is_a? Hash
+          item_context[key] || item_context[key.to_sym]
+        end
+      end
+
+      deferment_type = @deferment.extract_deferment_type(options, item_context) if !@deferment.disabled
+
+      if deferment_type
+        placeholder = @deferment.handle(options, deferment_type, key, val)
         base.stream.push_value(placeholder)
-        @fragment.handle(options)
+        @fragment.handle(options, item_context)
       else
-        handle_cache(options) do
+        handle_cache(options, item_context) do
           base.set_content! do
             if options[:partial]
-              @fragment.handle(options)
-              @partialer.handle(options)
+              @fragment.handle(options, item_context)
+              @partialer.handle(options, item_context)
             else
               yield
             end
 
-            if options[:key]
-              id, val = options[:key]
-              base.set!(id, val)
+            if key && val
+              base.set!(key, val)
             end
           end
         end
@@ -72,11 +68,13 @@ module Props
 
     private
 
-    def handle_cache(options)
+    def handle_cache(options, item)
       if options[:cache]
         recently_cached = false
 
-        state = @cache.cache(*options[:cache]) do
+        key, rest = Cache
+          .normalize_options(options[:cache], item)
+        state = @cache.cache(key, rest) do
           recently_cached = true
           result = nil
           start = base.stream.to_s.length
@@ -93,7 +91,7 @@ module Props
           result
         end
 
-        meta, raw_json = state.split("\n")
+        meta, raw_json = state.split("\n", 2)
         next_deferred, next_fragments = Oj.load(meta)
         deferred.push(*next_deferred)
         fragments.push(*next_fragments)

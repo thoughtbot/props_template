@@ -11,7 +11,7 @@ end
 Rabl.render(
   nil,
   "template",
-  view_path: File.expand_path("../performance/dirk/rabl/views/", __FILE__),
+  view_path: File.expand_path("./performance/dirk/rabl/views/"),
   format: :json,
 )
 
@@ -21,6 +21,6 @@ __SETUP__
 Rabl.render(
   nil,
   "template",
-  view_path: File.expand_path("../performance/dirk/rabl/views/", __FILE__),
+  view_path: File.expand_path("./performance/dirk/rabl/views/"),
   format: :json,
 )
