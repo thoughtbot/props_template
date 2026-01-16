@@ -60,8 +60,8 @@ module Props
       @results = results.merge multi_fetch(keys, options)
     end
 
-    # Copied from jbuilder
-    #
+    # The below was copied from the wonderful jbuilder library Its also MIT
+    # licensed, so no issues there.  Thanks to the jbuilder authors!
 
     def cache(key = nil, options = {})
       if controller.perform_caching
