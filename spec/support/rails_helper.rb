@@ -56,13 +56,17 @@ class << Rails
   end
 end
 
-def render(source, options = {})
+def build_view
   @controller.cache_store = Rails.cache
   view_path = File.join(File.dirname(__FILE__), "../fixtures")
   file_resolver = ActionView::FileSystemResolver.new(view_path)
   lookup_context = ActionView::LookupContext.new([file_resolver], {}, [""])
   lookup_context.formats = [:json]
-  view = FakeView.new(lookup_context, {}, @controller)
+  FakeView.new(lookup_context, {}, @controller)
+end
+
+def render(source, options = {})
+  view = build_view
   view.assign(options.fetch(:assigns, {}))
   template = ActionView::Template.new(source, "test", Props::Handler, virtual_path: "test", locals: [])
   template.render(view, {}).strip

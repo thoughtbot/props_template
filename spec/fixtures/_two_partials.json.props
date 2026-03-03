@@ -1,0 +1,4 @@
+json.simple(partial: "simple") do
+end
+json.comment(partial: "comment") do
+end

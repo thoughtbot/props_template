@@ -426,4 +426,28 @@ RSpec.describe "Props::Template" do
 
     expect(json).to eql_json([])
   end
+
+  it "renders a partial that itself renders two partials" do
+    json = render(<<~PROPS)
+      json.outer(partial: 'two_partials') do
+      end
+    PROPS
+
+    expect(json).to eql_json({
+      outer: {
+        simple: {foo: "bar"},
+        comment: {title: "some title", details: {body: "hello world"}}
+      }
+    })
+  end
+
+  it "renders two different partials sequentially on the same view context" do
+    view = build_view
+
+    result1 = view.render(partial: "simple", formats: [:json]).strip
+    result2 = view.render(partial: "comment", formats: [:json]).strip
+
+    expect(result1).to eql_json({foo: "bar"})
+    expect(result2).to eql_json({title: "some title", details: {body: "hello world"}})
+  end
 end
