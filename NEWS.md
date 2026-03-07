@@ -1,5 +1,29 @@
 # News
 
+## 1.0.0 (Jan 15, 2026)
+  * Performance improvements: reduce object allocations by removing cloning of
+    options passed to arrays. Props::Base now beats Panko, making it the fastest
+    JSON builder in Ruby. Props::Template outpaces Alba and Turbostreamer.
+  * Add `Props::Options` object and `props_options` view helper for a chainable
+    API when specifying partial/fragment/locals options.
+  * Add Rails 8.1 to build matrix, remove EOL versions.
+
+## 1.0.0.alpha.4 (Jan 3, 2026)
+  * Rename `with` to `prop_options` for the chainable options helper.
+
+## 1.0.0.alpha.3 (Sep 23, 2025)
+  * Fix graft path: `traveled_path` was being cleared unnecessarily, resulting
+    in an inaccurate graft path.
+  * Fix `partial!` when used with digging by moving the method to the top-level
+    so both builder instances have access to it.
+  * Ensure a key is added to pass_opts on an exact dig into an array element.
+  * Use instance variable if available in `active_template_virtual_path`.
+
+## 1.0.0.alpha.2 (Sep 19, 2025)
+  * Add `fragmentContext`: when digging with `props_at`, the found path is now
+    relative to the fragment it was found in, producing shorter graft paths.
+  * Fix `partial!` not working when digging.
+
 ## 1.0.0.alpha
   * Breaking change with how the fragments work. Where prior it was
   `{type: fragment_name, partial: partial_name, path: path}` the payload is now
