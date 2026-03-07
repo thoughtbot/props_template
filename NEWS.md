@@ -1,5 +1,10 @@
 # News
 
+## 1.0.1
+ * Fix: second props partial render on the same view returns nil. The `@__json`
+   instance variable persisted after the first partial finalized, causing
+   subsequent top-level renders to skip `result!` and return nil.
+
 ## 1.0.0 (Jan 15, 2026)
   * Performance improvements: reduce object allocations by removing cloning of
     options passed to arrays. Props::Base now beats Panko, making it the fastest
