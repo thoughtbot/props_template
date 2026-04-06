@@ -1,0 +1,9 @@
+Description:
+    Generates PropsTemplate view files (.json.props) for a given resource.
+
+Example:
+    rails generate props:views Post title:string body:text
+
+    This will create:
+        app/views/posts/index.json.props
+        app/views/posts/show.json.props
