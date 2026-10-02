@@ -1,5 +1,9 @@
 # News
 
+## 1.0.2
+ * Fix: digging was broken due to fragment_path being nil when calling `found_path!`, and
+   another instance where Searcher did not take Props::Options into account
+
 ## 1.0.1
  * Fix: second props partial render on the same view returns nil. The `@__json`
    instance variable persisted after the first partial finalized, causing
