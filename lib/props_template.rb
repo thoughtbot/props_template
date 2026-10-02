@@ -59,7 +59,11 @@ module Props
         @builder = prev_builder
         @fragment_path = fragment_path
 
-        if found_block
+        # An inline options object, e.g. `json.foo(with.partial("foo"))`, has
+        # no block; its content comes from the options instead.
+        found_inline_options = found_options.is_a?(Props::Options)
+
+        if found_block || found_inline_options
           @builder.item_context = found_item
           set!(key, found_options, &found_block)
         end
