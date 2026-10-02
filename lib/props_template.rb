@@ -76,8 +76,11 @@ module Props
       @context.render options
     end
 
+    # Relative to the fragment the dig ended in, so the client can graft into
+    # it; the full path when no fragment was crossed.
     def found_path!
-      @found_path[@fragment_path.size..].join(".")
+      fragment_path = @fragment_path || []
+      @found_path[fragment_path.size..].join(".")
     end
 
     def fragment_context!

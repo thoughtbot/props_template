@@ -444,6 +444,65 @@ RSpec.describe("searching the template") do
     })
   end
 
+  context "grafting path without a fragment" do
+    it "is the full path when digging through plain nodes" do
+      json = render(<<~PROPS)
+        json.data(dig: ['data', 'comment', 'details']) do
+          json.comment do
+            json.details do
+              json.body 'hello world'
+            end
+          end
+        end
+        json.fragmentContext json.fragment_context!
+        json.path json.found_path!
+      PROPS
+
+      expect(json).to eql_json({
+        data: {
+          body: "hello world"
+        },
+        fragmentContext: nil,
+        path: "data.comment.details"
+      })
+    end
+
+    it "is the full path when digging through a partial without a fragment" do
+      json = render(<<~PROPS)
+        json.data(dig: ['data', 'comment', 'details']) do
+          json.comment(partial: 'comment') do
+          end
+        end
+        json.fragmentContext json.fragment_context!
+        json.path json.found_path!
+      PROPS
+
+      expect(json).to eql_json({
+        data: {
+          body: "hello world"
+        },
+        fragmentContext: nil,
+        path: "data.comment.details"
+      })
+    end
+
+    it "is empty without digging" do
+      json = render(<<~PROPS)
+        json.data do
+          json.body 'hello world'
+        end
+        json.path json.found_path!
+      PROPS
+
+      expect(json).to eql_json({
+        data: {
+          body: "hello world"
+        },
+        path: ""
+      })
+    end
+  end
+
   context "when searching through a partial" do
     it "returns the correct node in an object" do
       json = render(<<~PROPS)
