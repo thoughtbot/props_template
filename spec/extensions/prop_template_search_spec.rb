@@ -239,6 +239,23 @@ RSpec.describe("searching the template") do
     })
   end
 
+  it "finds a node that is an inline options object" do
+    json = render(<<~PROPS)
+      json.data(dig: ['data', 'comment']) do
+        json.comment(Props::Options.new.partial('comment'))
+      end
+    PROPS
+
+    expect(json).to eql_json({
+      data: {
+        title: "some title",
+        details: {
+          body: "hello world"
+        }
+      }
+    })
+  end
+
   it "finds a subtree" do
     json = render(<<-PROPS)
       json.outer(dig: ['outer','inner', 'deep']) do
