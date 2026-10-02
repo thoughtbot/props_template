@@ -49,9 +49,15 @@ module Props
       partial = partial_opts[:partial]
       template_keys = retrieve_template_keys(partial_opts)
       details = extract_details(partial_opts)
+      lookup_context = @context.lookup_context
 
-      prefixes = partial.include?("/") ? [] : @context.lookup_context.prefixes
-      @context.lookup_context.find_template(partial, prefixes, true, template_keys, details)
+      prefixes = partial.include?("/") ? [] : lookup_context.prefixes
+
+      if lookup_context.respond_to?(:find!)
+        lookup_context.find!(partial, prefixes, true, template_keys, details)
+      else
+        lookup_context.find_template(partial, prefixes, true, template_keys, details)
+      end
     end
 
     def retrieve_template_keys(options)
