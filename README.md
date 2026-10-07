@@ -5,7 +5,7 @@ support for Russian-Doll caching, layouts, and can be queried by giving the
 root a key path.
 
 [![Build
-Status](https://circleci.com/gh/thoughtbot/props_template.svg?style=shield)](https://circleci.com/gh/thoughtbot/props_template)
+Status](https://github.com/thoughtbot/props_template/actions/workflows/build.yml/badge.svg)](https://github.com/thoughtbot/props_template/actions/workflows/build.yml)
 
 It's fast.
 
@@ -98,7 +98,7 @@ json.posts do
   end
 
   json.paginationPath posts_path
-  json.current pagedPosts.current_page
+  json.current paged_posts.current_page
   json.total @posts.count
 end
 
@@ -131,6 +131,12 @@ json.greetings "hello world"
 
 You can also add a [layout](#layouts).
 
+To generate `index` and `show` templates for a resource, use the generator:
+
+```
+rails g props:views Post title:string body:text
+```
+
 ## API
 
 ### json.set! or json.\<your key here\>
@@ -144,13 +150,13 @@ end
 
 # or
 
-json.authorDetails, with.some_option do
+json.authorDetails(with.some_option) do
   json.firstName 'David'
 end
 
 # or with hash options
 
-json.authorDetails, {...options} do
+json.authorDetails({...options}) do
   json.firstName 'David'
 end
 
@@ -163,7 +169,7 @@ The inline form defines key and value
 | Parameter | Notes |
 | :--- | :--- |
 | key | A json object key|
-| value | A value or an [options][#options] object enabled with [partial](#partials)|
+| value | A value or an [options](#options) object enabled with [partial](#partials)|
 
 ```ruby
 
@@ -268,7 +274,7 @@ class ObjectCollection < SimpleDelegator
 
   def member_by(attr, val)
     find do |ele|
-      ele[attr] == val
+      ele[attr.to_sym] == val
     end
   end
 end
@@ -296,7 +302,7 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def self.member_by(attr, value)
-    find_by(Hash[attr, val])
+    find_by(Hash[attr, value])
   end
 end
 ```
@@ -308,6 +314,30 @@ json.array! Post.all do
   # ...
 end
 ```
+
+#### json.child!
+
+To build an array of heterogeneous elements, call `json.array!` without a
+collection and add each element with `json.child!`:
+
+```ruby
+json.items do
+  json.array! do
+    json.child! do
+      json.title "first"
+    end
+
+    json.child! do
+      json.body "second"
+    end
+  end
+end
+
+# => {"items": [{"title": "first"}, {"body": "second"}]}
+```
+
+`json.child!` can be [dug](#digging) into by index, e.g. `items.1`, but not by
+attribute.
 
 #### **Array core extension**
 
@@ -321,7 +351,7 @@ data = [
   {id: 2, name: 'bar'}
 ]
 
-json.posts
+json.posts do
   json.array! data do
     # ...
   end
@@ -337,11 +367,11 @@ may still need to implement `member_by`.
 Returns all deferred nodes used by the [deferment](#deferment) option.
 
 **Note** This is a [SuperglueJS][1] specific functionality and is used in
-`application.json.props` when first running `rails superglue:install:web`
+`application.json.props` when first running `rails g superglue:install`
 
 
 ```ruby
-json.deferred json.deferred!
+json.defers json.deferred!
 
 # => [{url: '/some_url?props_at=outer.inner', path: 'outer.inner', type: 'auto'}]
 ```
@@ -353,10 +383,12 @@ to fetch missing data in a second round trip.
 Returns all fragment nodes used by the [partial fragments](#partial-fragments)
 option.
 
-```ruby json.fragments json.fragments!  ```
+```ruby
+json.fragments json.fragments!
+```
 
 **Note** This is a [SuperglueJS][1] specific functionality and is used in
-`application.json.props` when first running `rails superglue:install:web`
+`application.json.props` when first running `rails g superglue:install`
 
 ## Options
 
@@ -366,13 +398,13 @@ functionality such as Partials, Deferments, and Caching
 The following are equivalent:
 
 ```ruby
-json.post(with.partial('blog_post') 
+json.post(with.partial('blog_post'))
 ```
 
 or 
 
 ```ruby
-json.post(Props::Options.new.partial('blog_post') 
+json.post(Props::Options.new.partial('blog_post'))
 ```
 ### Hash options
 
@@ -388,7 +420,7 @@ end
 ### Partials
 
 Partials are supported. The following will render the file
-`views/posts/_blog_posts.json.props`, and set a local variable `post` assigned
+`views/posts/_blog_post.json.props`, and set a local variable `post` assigned
 with @post, which you can use inside the partial.
 
 ```ruby
@@ -456,12 +488,14 @@ json.profile do
 end
 ```
 
-When using fragments with Arrays, the argument **MUST** be a lamda:
+When using fragments with Arrays, the argument can be a String, a Symbol, or a
+lambda that receives each item and returns the fragment name. Return `nil` to
+skip the fragment for that item:
 
 ```ruby
 require 'props_template/core_ext'
 
-json.array! ['foo', 'bar'], with.partial("footer").fragment(->(x){ x == 'foo'})
+json.array! ['foo', 'bar'], with.partial("footer").fragment(->(x){ "footer_#{x}" })
 ```
 
 ### Caching
@@ -557,6 +591,19 @@ Finally in your `application.json.props`:
 json.defers json.deferred!
 ```
 
+To render every deferred node in place (e.g. for a request that should get
+the full page), call `json.disable_deferments!` before the deferred nodes:
+
+```ruby
+json.disable_deferments!
+
+json.dashboard(with.defer(:auto)) do
+  json.someFancyMetric 42
+end
+
+# => {"dashboard": {"someFancyMetric": 42}}
+```
+
 #### Working with arrays
 The default behavior for deferments is to use the index of the collection to
 identify an element.
@@ -570,8 +617,10 @@ If you wish to use an attribute to identify the element. You must:
 your collection item, and is used for `defer: :auto` to generate a keypath for
 [SuperglueJS][1]. If you are NOT using SuperglueJS, you do not need to do this.
 
-2. Implement `member_at`, on the [collection](#jsonarray). This will be called
-by PropsTemplate to when [digging](#digging)
+2. Implement `member_by(attr, value)` on the [collection](#jsonarray). This will
+be called by PropsTemplate when [digging](#digging) with a path like
+`posts.id=1`. Note that `attr` is passed as a String and `value` is coerced
+with `to_i`, so only integer attribute values are supported.
 
 For example:
 
@@ -582,7 +631,7 @@ data = [
   {id: 2, name: 'bar'}
 ]
 
-json.posts
+json.posts do
   json.array! data, with.id_key(:some_id) do |item|
     # By using :key, props_template will append `json.some_id item.some_id`
     # automatically
@@ -686,7 +735,7 @@ The above will render:
 ```
 
 ## Layouts
-A single layout is supported. To use, create an `application.json.props` in
+To use a layout, create an `application.json.props` in
 `app/views/layouts`. Here's an example:
 
 ```ruby
@@ -711,6 +760,23 @@ json.flash flash.to_h
 
 **NOTE** PropsTemplate inverts the usual Rails rendering flow. PropsTemplate
 will render Layout first, then the template when `yield json` is used.
+
+### Partials with layouts
+
+Partials can also be rendered with a layout. The layout is itself a partial:
+
+```ruby
+# app/views/posts/_stream_message.json.props
+json.greeting "Hello world"
+
+json.data do
+  yield
+end
+```
+
+```ruby
+render partial: "comment", layout: "stream_message"
+```
 
 
 ### Layouts in API-only Rails apps
@@ -747,7 +813,7 @@ Props::BaseWithExtensions.class_eval do
   # json.second_value "second"
   #
   # -> { "firstValue" => "first", "second_value" => "second" }
-  def key_format(key)
+  def format_key(key)
     key.to_s
   end
 end
@@ -758,7 +824,7 @@ Props::BaseWithExtensions.class_eval do
   # json.second_value "second"
   #
   # -> { "firstValue" => "first", "secondValue" => "second" }
-  def key_format(key)
+  def format_key(key)
     @key_cache ||= {}
     @key_cache[key] ||= key.to_s.camelize(:lower)
     @key_cache[key]
@@ -777,7 +843,7 @@ Props::BaseWithExtensions.class_eval do
   # json.second_value "second"
   #
   # -> { "first_value" => "first", "second_value" => "second" }
-  def key_format(key)
+  def format_key(key)
     @key_cache ||= {}
     @key_cache[key] ||= key.to_s.underscore
     @key_cache[key]
