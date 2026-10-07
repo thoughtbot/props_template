@@ -5,6 +5,7 @@ gemspec
 gem "rspec"
 gem "byebug"
 gem "rails", "~> 7.1.0"
+gem "json", "< 3"
 gem "analyzer", git: "https://github.com/thoughtbot/analyzer.git"
 gem "multi_json"
 gem "rabl"
