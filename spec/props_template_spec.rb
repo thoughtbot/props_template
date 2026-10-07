@@ -98,7 +98,7 @@ RSpec.describe "Props::Base" do
       json.set! :foo, "bar"
       json.set! :foo, "cool"
 
-      attrs = JSON.parse(json.result!)
+      attrs = JSON.parse(json.result!, allow_duplicate_key: true)
 
       expect(attrs).to eql({
         "foo" => "cool"

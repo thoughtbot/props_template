@@ -4,4 +4,5 @@ gemspec
 gem "rspec"
 gem "byebug"
 gem "rails", "~> 8.0.0"
+gem "json", "< 3"
 gem "standard", group: [:development, :test]
