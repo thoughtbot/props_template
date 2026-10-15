@@ -46,6 +46,10 @@ module Props
       yield
     end
 
+    def set_value!(key, value)
+      nil
+    end
+
     def set!(key, options = {}, &block)
       return if @found_block || !block && !options.is_a?(Props::Options)
 

@@ -67,8 +67,10 @@ module Props
           @builder.item_context = found_item
           set!(key, found_options, &found_block)
         end
-      else
+      elsif block || options.is_a?(Props::Options)
         @builder.set!(key, options, &block)
+      else
+        @builder.set_value!(key, options)
       end
     end
 
