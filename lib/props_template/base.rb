@@ -63,6 +63,21 @@ module Props
       nil
     end
 
+    def set_value!(key, value)
+      if @scope == :array
+        raise InvalidScopeForObjError.new("Attempted to set! on an array! scope")
+      end
+
+      if @scope.nil?
+        @scope = :object
+        @stream.push_object
+      end
+
+      @stream.push_value(value, format_key(key))
+
+      nil
+    end
+
     def handle_collection_item(collection, item, index, options)
       @item_context = item
 
@@ -124,7 +139,7 @@ module Props
           [value, value]
         end
 
-        set!(
+        set_value!(
           key,
           object.is_a?(Hash) ? object.fetch(attribute) : object.public_send(attribute)
         )

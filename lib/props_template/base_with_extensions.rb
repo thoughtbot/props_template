@@ -27,7 +27,7 @@ module Props
     end
 
     def set_content!(options = {})
-      return super if !@em.has_extensions(options)
+      return super if options.empty? || !@em.has_extensions(options)
 
       @em.handle(options, item_context) do
         yield
