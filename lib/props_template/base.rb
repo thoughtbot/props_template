@@ -36,7 +36,7 @@ module Props
     end
 
     def format_key(key)
-      key.to_s
+      (::Symbol === key) ? key.name : key.to_s
     end
 
     def set!(key, value = nil)

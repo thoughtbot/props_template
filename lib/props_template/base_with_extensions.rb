@@ -46,10 +46,6 @@ module Props
       @em = ExtensionManager.new(self, prev_state[1], prev_state[2])
     end
 
-    def format_key(key)
-      key.to_s
-    end
-
     def set!(key, options = {}, &block)
       if !block && options.is_a?(Props::Options)
         options.valid_for_set!
