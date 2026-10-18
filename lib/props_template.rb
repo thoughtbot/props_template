@@ -17,6 +17,12 @@ require "active_support"
 
 module Props
   class Template
+    GENERATED_KEY_METHODS = Module.new
+    include GENERATED_KEY_METHODS
+
+    GENERATABLE_KEY_REGEXP = /\A[a-zA-Z_]\w*[!?]?\z/
+    GENERATED_KEY_METHODS_LOCK = Mutex.new
+
     class << self
       attr_accessor :template_lookup_options
     end
@@ -93,8 +99,30 @@ module Props
       @builder
     end
 
-    alias_method :method_missing, :set!
-    private :method_missing
+    def self.generate_key_method(key)
+      GENERATED_KEY_METHODS_LOCK.synchronize do
+        name = key.name
+        already_implemented = method_defined?(key) || private_method_defined?(key)
+
+        if !already_implemented && GENERATABLE_KEY_REGEXP.match?(name)
+          GENERATED_KEY_METHODS.module_eval <<~RUBY, __FILE__, __LINE__ + 1
+            def #{name}(options = {}, &block)
+              set!(#{key.inspect}, options, &block)
+            end
+          RUBY
+        end
+      end
+    end
+
+    private
+
+    # No respond_to_missing?: a builder accepts any key, but claiming to
+    # respond to everything would answer yes to probes like to_ary or to_hash.
+    # Generated methods are real methods, so respond_to? sees those already.
+    def method_missing(key, ...) # standard:disable Style/MissingRespondToMissing
+      self.class.generate_key_method(key)
+      set!(key, ...)
+    end
   end
 end
 
