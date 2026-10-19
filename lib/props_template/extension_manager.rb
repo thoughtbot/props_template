@@ -70,22 +70,16 @@ module Props
 
     def handle_cache(options, item)
       if options[:cache]
-        recently_cached = false
-
         key, rest = Cache
           .normalize_options(options[:cache], item)
+
+        # A miss renders into a writer of its own, so its JSON is added to
+        # the output below like a hit's.
         state = @cache.cache(key, rest) do
-          recently_cached = true
           result = nil
-          start = base.stream.to_s.length
           base.scoped_state { |stream, deferred_paths, fragment_paths|
-            yield
+            raw = base.capture_json { yield }
             meta = Oj.dump([deferred_paths, fragment_paths]).strip
-            json_in_progress = base.stream.to_s
-            if json_in_progress[start] == ","
-              start += 1
-            end
-            raw = base.stream.to_s[start..].strip
             result = "#{meta}\n#{raw}"
           }
           result
@@ -96,9 +90,7 @@ module Props
         deferred.push(*next_deferred)
         fragments.push(*next_fragments)
 
-        if !recently_cached
-          base.stream.push_json(raw_json)
-        end
+        base.stream.push_json(raw_json)
       else
         yield
       end

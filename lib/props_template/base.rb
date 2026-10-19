@@ -168,6 +168,15 @@ module Props
       @child_index = child_index
     end
 
+    def capture_json
+      parent_stream = @stream
+      @stream = Oj::StringWriter.new(mode: :rails)
+      yield
+      @stream.raw_json.strip
+    ensure
+      @stream = parent_stream
+    end
+
     def result!
       if @scope.nil?
         @stream.push_object
