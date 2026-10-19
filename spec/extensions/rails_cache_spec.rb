@@ -827,4 +827,86 @@ RSpec.describe "Props::Template caching" do
       })
     end
   end
+
+  context "when caching is disabled" do
+    before do
+      @controller.perform_caching = false
+      @controller.request.path = "/some_url"
+    end
+
+    it "renders an object without the cache" do
+      expect_any_instance_of(Props::BaseWithExtensions).to_not receive(:capture_json)
+
+      render(<<~PROPS)
+        json.author(cache: 'some_cache_key') do
+          json.firstName 'hit'
+        end
+      PROPS
+
+      json = render(<<~PROPS)
+        json.author(cache: 'some_cache_key') do
+          json.firstName 'miss'
+        end
+      PROPS
+
+      expect(json).to eql_json({
+        author: {
+          firstName: "miss"
+        }
+      })
+    end
+
+    it "renders an array without fetching from the cache" do
+      expect_any_instance_of(Props::Cache).to_not receive(:multi_fetch)
+
+      json = render(<<~PROPS)
+        json.authors do
+          opts = {
+            cache: (->(i) {['some_cache', i]})
+          }
+          json.array! [1,2], opts do |id|
+            json.id id
+          end
+        end
+      PROPS
+
+      expect(json).to eql_json({
+        authors: [
+          {id: 1},
+          {id: 2}
+        ]
+      })
+    end
+
+    it "keeps deferred and fragment paths" do
+      json = render(<<~PROPS)
+        json.post(cache: 'some_cache_key') do
+          json.greeting(defer: :auto) do
+            json.foo 'hello world'
+          end
+
+          json.simple(partial: ['simple', fragment: :simple]) do
+          end
+        end
+
+        json.deferred json.deferred!
+        json.fragments json.fragments!
+      PROPS
+
+      expect(json).to eql_json({
+        post: {
+          greeting: {},
+          simple: {
+            foo: "bar"
+          }
+        },
+        deferred: [
+          {url: "/some_url?props_at=post.greeting", path: "post.greeting", type: "auto"}
+        ],
+        fragments: [
+          {id: :simple, path: "post.simple"}
+        ]
+      })
+    end
+  end
 end

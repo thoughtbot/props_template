@@ -73,7 +73,7 @@ module Props
     private
 
     def handle_cache(options, item)
-      if options[:cache]
+      if options[:cache] && @cache.enabled?
         key, rest = Cache
           .normalize_options(options[:cache], item)
 

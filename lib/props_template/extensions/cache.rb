@@ -56,15 +56,21 @@ module Props
       result
     end
 
+    def enabled?
+      controller.perform_caching
+    end
+
     def load_cache(keys, options = {})
-      @results = results.merge multi_fetch(keys, options)
+      if enabled?
+        @results = results.merge multi_fetch(keys, options)
+      end
     end
 
     # The below was copied from the wonderful jbuilder library Its also MIT
     # licensed, so no issues there.  Thanks to the jbuilder authors!
 
     def cache(key = nil, options = {})
-      if controller.perform_caching
+      if enabled?
         cache_fragment_for(key, options) do
           yield
         end
