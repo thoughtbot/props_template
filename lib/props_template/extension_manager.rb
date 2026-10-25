@@ -1,5 +1,9 @@
 module Props
   class ExtensionManager
+    # A cached fragment is stored after a line of the deferred and fragment
+    # paths inside it, which is this when there are none.
+    EMPTY_META_LINE = "[[],[]]\n".freeze
+
     attr_reader :base, :builder, :context, :cache, :partialer
 
     delegate :load_cache, to: :cache
@@ -85,10 +89,17 @@ module Props
           result
         end
 
-        meta, raw_json = state.split("\n", 2)
-        next_deferred, next_fragments = Oj.load(meta)
-        deferred.push(*next_deferred)
-        fragments.push(*next_fragments)
+        # Nearly every fragment has no deferred or fragment paths, so the
+        # empty line is skipped without being split off or parsed.
+        if state.start_with?(EMPTY_META_LINE)
+          raw_json = state.byteslice(EMPTY_META_LINE.bytesize..)
+        else
+          separator = state.byteindex("\n")
+          next_deferred, next_fragments = Oj.load(state.byteslice(0, separator))
+          deferred.push(*next_deferred)
+          fragments.push(*next_fragments)
+          raw_json = state.byteslice((separator + 1)..)
+        end
 
         base.stream.push_json(raw_json)
       else
