@@ -80,6 +80,20 @@ RSpec.describe "Props::Base" do
       })
     end
 
+    it "sets a value that responds to raw_json as is" do
+      json = Props::Base.new
+      raw = Object.new
+      def raw.raw_json(depth, indent) = '{"bar":1}'
+      json.set! :foo, raw
+      attrs = json.result!.strip
+
+      expect(attrs).to eql_json({
+        foo: {
+          bar: 1
+        }
+      })
+    end
+
     it "sets multiple values" do
       json = Props::Base.new
       json.set! :foo, "bar"

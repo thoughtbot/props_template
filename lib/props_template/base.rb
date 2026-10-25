@@ -1,5 +1,6 @@
 require "oj"
 require "active_support"
+require "props_template/raw_json"
 
 module Props
   class InvalidScopeForArrayError < StandardError; end
@@ -11,8 +12,10 @@ module Props
   class Base
     attr_accessor :item_context
 
+    WRITER_OPTIONS = {mode: :rails, use_raw_json: true}.freeze
+
     def initialize(encoder = nil)
-      @stream = Oj::StringWriter.new(mode: :rails)
+      @stream = Oj::StringWriter.new(WRITER_OPTIONS)
       @scope = nil
       @item_context = nil
     end
@@ -170,11 +173,16 @@ module Props
 
     def capture_json
       parent_stream = @stream
-      @stream = Oj::StringWriter.new(mode: :rails)
+      @stream = Oj::StringWriter.new(WRITER_OPTIONS)
       yield
       @stream.raw_json.strip
     ensure
       @stream = parent_stream
+    end
+
+    # Adds already-encoded JSON, such as a cached fragment, as the next value.
+    def push_cached_json(json)
+      @stream.push_value(RawJSON.new(json))
     end
 
     def result!

@@ -101,7 +101,7 @@ module Props
           raw_json = state.byteslice((separator + 1)..)
         end
 
-        base.stream.push_json(raw_json)
+        base.stream.push_value(RawJSON.new(raw_json))
       else
         yield
       end
