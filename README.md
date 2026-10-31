@@ -14,48 +14,60 @@ that other libraries perform by using Oj's `StringWriter` in `rails` mode.
 
 ![benchmarks](docs/benchmarks.png)
 
-It's really fast. 
+It's really fast.
 
-`props_template` is second only to `panko` while being feature packed. The
-`Props::Base` [class](./lib/props_template/base.rb) that be used standalone
-is the fastest among all JSON serializers. Results derived from [alba benchmarks](https://github.com/thoughtbot/alba/tree/main/benchmark).
+`props_template` is the fastest, outpacing `panko` in results derived from
+[alba benchmarks](https://github.com/thoughtbot/alba/tree/main/benchmark).
 
 ```
-    props_base_class:     1439.9 i/s
-               panko:     1287.6 i/s - 1.12x  slower
-      props_template:      998.8 i/s - 1.44x  slower
-       turbostreamer:      912.9 i/s - 1.58x  slower
-                alba:      871.0 i/s - 1.65x  slower
-         jserializer:      668.7 i/s - 2.15x  slower
-alba_with_transformation:      604.2 i/s - 2.38x  slower
-              barley:      452.2 i/s - 3.18x  slower
-        barley_cache:      441.4 i/s - 3.26x  slower
-            jbuilder:      432.6 i/s - 3.33x  slower
-     fast_serializer:      390.1 i/s - 3.69x  slower
-               rails:      374.1 i/s - 3.85x  slower
-                rabl:      310.3 i/s - 4.64x  slower
-         blueprinter:      268.4 i/s - 5.36x  slower
-       representable:      187.2 i/s - 7.69x  slower
-          simple_ams:      124.5 i/s - 11.57x  slower
-                 ams:       41.5 i/s - 34.67x  slower
-         alba_inline:       10.9 i/s - 131.64x  slower
-
-Gem versions:
-active_model_serializers: 0.10.16
-alba: 3.10.0
-barley: 0.9.0
-blueprinter: 1.2.1
-jbuilder: 2.14.1
-jserializer: 0.2.1
-panko_serializer: 0.8.4
-rabl: 0.17.0
-representable: 3.2.0
-simple_ams: 0.2.6
-turbostreamer: 1.11.0
-
-Ruby version: 3.4.8
-Apple M4 Pro
+Comparison:
+          props_template:     1338.1 i/s
+                   panko:     1257.2 i/s - 1.06x  slower
+                    alba:      939.9 i/s - 1.42x  slower
+           turbostreamer:      909.7 i/s - 1.47x  slower
+                  barley:      887.7 i/s - 1.51x  slower
+                jbuilder:      782.9 i/s - 1.71x  slower
+             jserializer:      713.7 i/s - 1.87x  slower
+             blueprinter:      662.8 i/s - 2.02x  slower
+alba_with_transformation:      653.7 i/s - 2.05x  slower
+                    rabl:      418.3 i/s - 3.20x  slower
+         fast_serializer:      407.2 i/s - 3.29x  slower
+                   rails:      357.7 i/s - 3.74x  slower
+              simple_ams:      156.9 i/s - 8.53x  slower
+           representable:      155.3 i/s - 8.62x  slower
+                     ams:       49.6 i/s - 26.98x  slower
+             alba_inline:       13.8 i/s - 96.63x  slower
 ```
+
+Machine spec:
+
+|Key|Value|
+|---|---|
+|OS|macOS 26.7.1|
+|CPU|Apple M4 Pro|
+|RAM|48GB|
+|Ruby|ruby 4.0.9 (2026-10-23 revision 3e93b23afc) +PRISM [arm64-darwin25]|
+
+Library versions:
+
+|Library|Version|
+|---|---|
+|alba|4.0.1|
+|barley|0.9.0|
+|blueprinter|1.3.0|
+|fast_serializer_ruby|0.6.9|
+|jserializer|0.2.1|
+|oj|3.17.7|
+|simple_ams|0.2.6|
+|representable|3.3.1|
+|turbostreamer|2.0.1|
+|jbuilder|2.15.1|
+|panko_serializer|0.8.5|
+|active_model_serializers|0.10.16|
+|activesupport (`rails`)|8.1.4|
+|rabl|0.17.0|
+|props_template|1.2.0|
+
 
 Caching is fast too.
 
