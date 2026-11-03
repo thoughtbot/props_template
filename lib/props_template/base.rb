@@ -121,15 +121,32 @@ module Props
     end
 
     def handle_collection(collection, options)
-      collection.each_with_index do |item, index|
-        handle_collection_item(collection, item, index, options) do
-          # todo: remove index?
+      if options.empty?
+        # No extension can apply to an item, so skip the per-item
+        # handle_collection_item and set_content! layers and do the same
+        # work in one loop.
+        index = 0
+        collection.each do |item|
+          @traveled_path.push(index)
+          @scope = nil
+          @item_context = nil
           yield item, index
+          @stream.push_object if @scope.nil?
+          @stream.pop
+          @traveled_path.pop
+          index += 1
+        end
+      else
+        collection.each_with_index do |item, index|
+          handle_collection_item(collection, item, index, options) do
+            # todo: remove index?
+            yield item, index
+          end
         end
       end
     end
 
-    def array!(collection = nil, options = {})
+    def array!(collection = nil, options = {}, &block)
       if @scope.nil?
         @scope = :array
         @stream.push_array
@@ -142,9 +159,7 @@ module Props
           @child_index = nil
           yield
         else
-          handle_collection(collection, options) do |item, index|
-            yield item, index
-          end
+          handle_collection(collection, options, &block)
         end
       elsif options.is_a?(Props::Options)
         options.valid_for_set!
