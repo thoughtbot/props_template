@@ -1,12 +1,11 @@
 module Props
   class BaseWithExtensions < Base
-    attr_reader :builder, :context, :fragments, :traveled_path, :deferred, :stream
+    attr_reader :builder, :context, :fragments, :deferred, :stream
 
     def initialize(builder, context = nil, options = {})
       @context = context
       @builder = builder
       @em = ExtensionManager.new(self)
-      @traveled_path = []
       super()
     end
 
@@ -20,10 +19,6 @@ module Props
 
     def fragments!
       @em.fragments
-    end
-
-    def traveled_path!
-      @traveled_path.join(".")
     end
 
     def set_content!(options = {})
@@ -55,21 +50,6 @@ module Props
       end
     end
 
-    def handle_set_block(key, options)
-      n = 1
-      if (suffix = options[:path_suffix])
-        n += suffix.length
-        @traveled_path.push(suffix)
-      else
-        @traveled_path.push(key)
-      end
-
-      super
-
-      @traveled_path.pop(n)
-      nil
-    end
-
     def handle_collection(collection, options)
       if options[:cache]
         key, rest = [*options[:cache]]
@@ -83,31 +63,6 @@ module Props
       end
 
       super
-    end
-
-    def handle_collection_item(collection, item, index, options)
-      if !options[:key]
-        @traveled_path.push(index)
-      else
-        if (key = options[:key])
-          val = if item.respond_to? key
-            item.send(key)
-          elsif item.is_a? Hash
-            item[key] || item[key.to_sym]
-          end
-        end
-
-        if key.nil?
-          @traveled_path.push(index)
-        else
-          @traveled_path.push("#{key}=#{val}")
-        end
-      end
-
-      super
-
-      @traveled_path.pop
-      nil
     end
   end
 end

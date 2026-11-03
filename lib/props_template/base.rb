@@ -11,6 +11,7 @@ module Props
 
   class Base
     attr_accessor :item_context
+    attr_reader :traveled_path
 
     WRITER_OPTIONS = {mode: :rails, use_raw_json: true}.freeze
 
@@ -18,6 +19,7 @@ module Props
       @stream = Oj::StringWriter.new(WRITER_OPTIONS)
       @scope = nil
       @item_context = nil
+      @traveled_path = []
     end
 
     def set_content!(options = {})
@@ -31,11 +33,25 @@ module Props
     end
 
     def handle_set_block(key, options)
+      # A path_suffix, which dig and search pass when they render from inside
+      # a tree, stands in for the key in the path.
+      suffix = ::Hash === options && options[:path_suffix]
+      n = 1
+      if suffix
+        n += suffix.length
+        @traveled_path.push(suffix)
+      else
+        @traveled_path.push(key)
+      end
+
       key = format_key(key)
       @stream.push_key(key)
       set_content!(options) do
         yield
       end
+
+      @traveled_path.pop(n)
+      nil
     end
 
     def format_key(key)
@@ -84,9 +100,24 @@ module Props
     def handle_collection_item(collection, item, index, options)
       @item_context = item
 
+      if (key = options[:key])
+        val = if item.respond_to? key
+          item.send(key)
+        elsif item.is_a? Hash
+          item[key] || item[key.to_sym]
+        end
+
+        @traveled_path.push("#{key}=#{val}")
+      else
+        @traveled_path.push(index)
+      end
+
       set_content!(options) do
         yield
       end
+
+      @traveled_path.pop
+      nil
     end
 
     def handle_collection(collection, options)
@@ -183,6 +214,10 @@ module Props
     # Adds already-encoded JSON, such as a cached fragment, as the next value.
     def push_cached_json(json)
       @stream.push_value(RawJSON.new(json))
+    end
+
+    def traveled_path!
+      @traveled_path.join(".")
     end
 
     def result!
